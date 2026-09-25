@@ -2,6 +2,12 @@
 
 import { useState } from "react";
 
+import DashboardHeader from "@/components/DashboardHeader";
+import SpendingSummary from "@/components/SpendingSummary";
+import AddExpenseForm from "@/components/AddExpenseForm";
+import ExpenseList from "@/components/ExpenseList";
+import CategorySpending from "@/components/CategorySpending";
+
 type Expense = {
     id: number;
     category: string;
@@ -44,6 +50,12 @@ export default function Home() {
         setDate("");
     };
 
+    const handleDeleteExpense = (id: number) => {
+        setExpenses((currentExpenses) =>
+            currentExpenses.filter((expense) => expense.id !== id)
+        );
+    };
+
     const totalSpending = expenses.reduce(
         (total, expense) => total + expense.amount,
         0
@@ -51,189 +63,29 @@ export default function Home() {
 
     return (
         <main className="min-h-screen bg-zinc-950 text-white">
-            <div className="mx-auto max-w-6xl px-6 py-8">
+            <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+                <DashboardHeader />
 
-                {/* Header */}
-                <header className="mb-10 flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-semibold">
-                            Expense Tracker
-                        </h1>
+                <SpendingSummary totalSpending={totalSpending} />
 
-                        <p className="mt-1 text-sm text-zinc-400">
-                            Manage your daily spending
-                        </p>
-                    </div>
+                <AddExpenseForm
+                    amount={amount}
+                    category={category}
+                    description={description}
+                    date={date}
+                    setAmount={setAmount}
+                    setCategory={setCategory}
+                    setDescription={setDescription}
+                    setDate={setDate}
+                    onSubmit={handleSubmit}
+                />
 
-                    <button className="rounded-lg border border-zinc-700 px-4 py-2 text-sm transition hover:bg-zinc-800">
-                        Logout
-                    </button>
-                </header>
+                <ExpenseList
+                    expenses={expenses}
+                    onDelete={handleDeleteExpense}
+                />
 
-                {/* Spending Summary */}
-                <section className="mb-8">
-                    <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-                        <p className="text-sm text-zinc-400">
-                            Total Spending
-                        </p>
-
-                        <h2 className="mt-2 text-4xl font-bold">
-                            ₹{totalSpending.toLocaleString("en-IN")}
-                        </h2>
-
-                        <p className="mt-2 text-sm text-zinc-500">
-                            Your total expenses
-                        </p>
-                    </div>
-                </section>
-
-                {/* Add Expense */}
-                <section className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-                    <h2 className="mb-6 text-xl font-semibold">
-                        Add Expense
-                    </h2>
-
-                    <form onSubmit={handleSubmit}>
-                        <div className="grid gap-5 md:grid-cols-2">
-
-                            {/* Amount */}
-                            <div>
-                                <label className="mb-2 block text-sm text-zinc-400">
-                                    Amount
-                                </label>
-
-                                <input
-                                    type="number"
-                                    value={amount}
-                                    onChange={(event) => setAmount(event.target.value)}
-                                    placeholder="Enter amount"
-                                    className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition placeholder:text-zinc-600 focus:border-zinc-400"
-                                />
-                            </div>
-
-                            {/* Category */}
-                            <div>
-                                <label className="mb-2 block text-sm text-zinc-400">
-                                    Category
-                                </label>
-
-                                <select
-                                    value={category}
-                                    onChange={(event) => setCategory(event.target.value)}
-                                    className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-400"
-                                >
-                                    <option>Food</option>
-                                    <option>Travel</option>
-                                    <option>Shopping</option>
-                                    <option>Bills</option>
-                                    <option>Other</option>
-                                </select>
-                            </div>
-
-                            {/* Description */}
-                            <div className="md:col-span-2">
-                                <label className="mb-2 block text-sm text-zinc-400">
-                                    Description
-                                </label>
-
-                                <input
-                                    type="text"
-                                    value={description}
-                                    onChange={(event) =>
-                                        setDescription(event.target.value)
-                                    }
-                                    placeholder="What did you spend on?"
-                                    className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition placeholder:text-zinc-600 focus:border-zinc-400"
-                                />
-                            </div>
-
-
-                                {/* Date */}
-                            <div>
-                                <label
-                                    htmlFor="expense-date"
-                                    className="mb-2 block text-sm text-zinc-400"
-                                >
-                                    Date
-                                </label>
-
-                                <input
-                                    id="expense-date"
-                                    type="date"
-                                    value={date}
-                                    onChange={(event) => setDate(event.target.value)}
-                                    onClick={(event) => event.currentTarget.showPicker()}
-                                    className="w-full cursor-pointer rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-400"
-                                />
-                            </div>
-
-                            {/* Submit */}
-                            <div className="flex items-end">
-                                <button
-                                    type="submit"
-                                    className="w-full rounded-lg bg-white px-5 py-3 font-medium text-black transition hover:bg-zinc-200 active:scale-[0.98]"
-                                >
-                                    Add Expense
-                                </button>
-                            </div>
-
-                        </div>
-                    </form>
-                </section>
-
-                {/* Expenses */}
-                <section className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-                    <div className="mb-6">
-                        <h2 className="text-xl font-semibold">
-                            Recent Expenses
-                        </h2>
-
-                        <p className="mt-1 text-sm text-zinc-500">
-                            Your latest spending
-                        </p>
-                    </div>
-
-                    <div className="space-y-3">
-                        {expenses.length === 0 ? (
-                            <p className="py-8 text-center text-sm text-zinc-500">
-                                No expenses added yet.
-                            </p>
-                        ) : (
-                            expenses.map((expense) => (
-                                <div
-                                    key={expense.id}
-                                    className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-950 p-4 transition hover:border-zinc-700 hover:bg-zinc-900"
-                                >
-                                    <div>
-                                        <p className="font-medium">
-                                            {expense.description}
-                                        </p>
-
-                                        <p className="mt-1 text-sm text-zinc-500">
-                                            {expense.category} · {expense.date}
-                                        </p>
-                                    </div>
-
-                                    <p className="font-semibold">
-                                        ₹{expense.amount}
-                                    </p>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </section>
-
-                {/* Category Spending */}
-                <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-                    <h2 className="text-xl font-semibold">
-                        Spending by Category
-                    </h2>
-
-                    <p className="mt-2 text-sm text-zinc-500">
-                        Category calculations will be added next.
-                    </p>
-                </section>
-
+                <CategorySpending expenses={expenses} />
             </div>
         </main>
     );
