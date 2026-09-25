@@ -1,25 +1,54 @@
-const expenses = [
-    {
-        id: 1,
-        category: "Food",
-        description: "Lunch",
-        amount: 450,
-    },
-    {
-        id: 2,
-        category: "Travel",
-        description: "Cab",
-        amount: 280,
-    },
-    {
-        id: 3,
-        category: "Shopping",
-        description: "T-shirt",
-        amount: 1200,
-    },
-];
+"use client";
+
+import { useState } from "react";
+
+type Expense = {
+    id: number;
+    category: string;
+    description: string;
+    amount: number;
+    date: string;
+};
 
 export default function Home() {
+    const [expenses, setExpenses] = useState<Expense[]>([]);
+
+    const [amount, setAmount] = useState("");
+    const [category, setCategory] = useState("Food");
+    const [description, setDescription] = useState("");
+    const [date, setDate] = useState("");
+
+    const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if (!amount || !description || !date) {
+            return;
+        }
+
+        const newExpense: Expense = {
+            id: Date.now(),
+            category,
+            description,
+            amount: Number(amount),
+            date,
+        };
+
+        setExpenses((currentExpenses) => [
+            ...currentExpenses,
+            newExpense,
+        ]);
+
+        setAmount("");
+        setCategory("Food");
+        setDescription("");
+        setDate("");
+    };
+
+    const totalSpending = expenses.reduce(
+        (total, expense) => total + expense.amount,
+        0
+    );
+
     return (
         <main className="min-h-screen bg-zinc-950 text-white">
             <div className="mx-auto max-w-6xl px-6 py-8">
@@ -49,7 +78,7 @@ export default function Home() {
                         </p>
 
                         <h2 className="mt-2 text-4xl font-bold">
-                            ₹1,930
+                            ₹{totalSpending.toLocaleString("en-IN")}
                         </h2>
 
                         <p className="mt-2 text-sm text-zinc-500">
@@ -64,105 +93,133 @@ export default function Home() {
                         Add Expense
                     </h2>
 
-                    <div className="grid gap-5 md:grid-cols-2">
+                    <form onSubmit={handleSubmit}>
+                        <div className="grid gap-5 md:grid-cols-2">
 
-                        <div>
-                            <label className="mb-2 block text-sm text-zinc-400">
-                                Amount
-                            </label>
+                            {/* Amount */}
+                            <div>
+                                <label className="mb-2 block text-sm text-zinc-400">
+                                    Amount
+                                </label>
 
-                            <input
-                                type="number"
-                                placeholder="Enter amount"
-                                className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition placeholder:text-zinc-600 focus:border-zinc-400"
-                            />
+                                <input
+                                    type="number"
+                                    value={amount}
+                                    onChange={(event) => setAmount(event.target.value)}
+                                    placeholder="Enter amount"
+                                    className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition placeholder:text-zinc-600 focus:border-zinc-400"
+                                />
+                            </div>
+
+                            {/* Category */}
+                            <div>
+                                <label className="mb-2 block text-sm text-zinc-400">
+                                    Category
+                                </label>
+
+                                <select
+                                    value={category}
+                                    onChange={(event) => setCategory(event.target.value)}
+                                    className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-400"
+                                >
+                                    <option>Food</option>
+                                    <option>Travel</option>
+                                    <option>Shopping</option>
+                                    <option>Bills</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+
+                            {/* Description */}
+                            <div className="md:col-span-2">
+                                <label className="mb-2 block text-sm text-zinc-400">
+                                    Description
+                                </label>
+
+                                <input
+                                    type="text"
+                                    value={description}
+                                    onChange={(event) =>
+                                        setDescription(event.target.value)
+                                    }
+                                    placeholder="What did you spend on?"
+                                    className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition placeholder:text-zinc-600 focus:border-zinc-400"
+                                />
+                            </div>
+
+
+                                {/* Date */}
+                            <div>
+                                <label
+                                    htmlFor="expense-date"
+                                    className="mb-2 block text-sm text-zinc-400"
+                                >
+                                    Date
+                                </label>
+
+                                <input
+                                    id="expense-date"
+                                    type="date"
+                                    value={date}
+                                    onChange={(event) => setDate(event.target.value)}
+                                    onClick={(event) => event.currentTarget.showPicker()}
+                                    className="w-full cursor-pointer rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-400"
+                                />
+                            </div>
+
+                            {/* Submit */}
+                            <div className="flex items-end">
+                                <button
+                                    type="submit"
+                                    className="w-full rounded-lg bg-white px-5 py-3 font-medium text-black transition hover:bg-zinc-200 active:scale-[0.98]"
+                                >
+                                    Add Expense
+                                </button>
+                            </div>
+
                         </div>
-
-                        <div>
-                            <label className="mb-2 block text-sm text-zinc-400">
-                                Category
-                            </label>
-
-                            <select className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-400">
-                                <option>Food</option>
-                                <option>Travel</option>
-                                <option>Shopping</option>
-                                <option>Bills</option>
-                                <option>Other</option>
-                            </select>
-                        </div>
-
-                        <div className="md:col-span-2">
-                            <label className="mb-2 block text-sm text-zinc-400">
-                                Description
-                            </label>
-
-                            <input
-                                type="text"
-                                placeholder="What did you spend on?"
-                                className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition placeholder:text-zinc-600 focus:border-zinc-400"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="mb-2 block text-sm text-zinc-400">
-                                Date
-                            </label>
-
-                            <input
-                                type="date"
-                                className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none transition focus:border-zinc-400"
-                            />
-                        </div>
-
-                        <div className="flex items-end">
-                            <button className="w-full rounded-lg bg-white px-5 py-3 font-medium text-black transition hover:bg-zinc-200 active:scale-[0.98]">
-                                Add Expense
-                            </button>
-                        </div>
-
-                    </div>
+                    </form>
                 </section>
 
                 {/* Expenses */}
                 <section className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-                    <div className="mb-6 flex items-center justify-between">
-                        <div>
-                            <h2 className="text-xl font-semibold">
-                                Recent Expenses
-                            </h2>
+                    <div className="mb-6">
+                        <h2 className="text-xl font-semibold">
+                            Recent Expenses
+                        </h2>
 
-                            <p className="mt-1 text-sm text-zinc-500">
-                                Your latest spending
-                            </p>
-                        </div>
-
-                        <button className="text-sm text-zinc-400 transition hover:text-white">
-                            View all
-                        </button>
+                        <p className="mt-1 text-sm text-zinc-500">
+                            Your latest spending
+                        </p>
                     </div>
 
                     <div className="space-y-3">
-                        {expenses.map((expense) => (
-                            <div
-                                key={expense.id}
-                                className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-950 p-4 transition hover:border-zinc-700 hover:bg-zinc-900"
-                            >
-                                <div>
-                                    <p className="font-medium">
-                                        {expense.description}
-                                    </p>
+                        {expenses.length === 0 ? (
+                            <p className="py-8 text-center text-sm text-zinc-500">
+                                No expenses added yet.
+                            </p>
+                        ) : (
+                            expenses.map((expense) => (
+                                <div
+                                    key={expense.id}
+                                    className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-950 p-4 transition hover:border-zinc-700 hover:bg-zinc-900"
+                                >
+                                    <div>
+                                        <p className="font-medium">
+                                            {expense.description}
+                                        </p>
 
-                                    <p className="mt-1 text-sm text-zinc-500">
-                                        {expense.category}
+                                        <p className="mt-1 text-sm text-zinc-500">
+                                            {expense.category} · {expense.date}
+                                        </p>
+                                    </div>
+
+                                    <p className="font-semibold">
+                                        ₹{expense.amount}
                                     </p>
                                 </div>
-
-                                <p className="font-semibold">
-                                    ₹{expense.amount}
-                                </p>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </section>
 
@@ -172,57 +229,9 @@ export default function Home() {
                         Spending by Category
                     </h2>
 
-                    <div className="mt-6 space-y-5">
-
-                        <div>
-                            <div className="mb-2 flex justify-between text-sm">
-                <span className="text-zinc-400">
-                  Food
-                </span>
-
-                                <span>
-                  ₹450
-                </span>
-                            </div>
-
-                            <div className="h-2 overflow-hidden rounded-full bg-zinc-800">
-                                <div className="h-full w-[35%] rounded-full bg-white" />
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="mb-2 flex justify-between text-sm">
-                <span className="text-zinc-400">
-                  Travel
-                </span>
-
-                                <span>
-                  ₹280
-                </span>
-                            </div>
-
-                            <div className="h-2 overflow-hidden rounded-full bg-zinc-800">
-                                <div className="h-full w-[20%] rounded-full bg-white" />
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="mb-2 flex justify-between text-sm">
-                <span className="text-zinc-400">
-                  Shopping
-                </span>
-
-                                <span>
-                  ₹1,200
-                </span>
-                            </div>
-
-                            <div className="h-2 overflow-hidden rounded-full bg-zinc-800">
-                                <div className="h-full w-[75%] rounded-full bg-white" />
-                            </div>
-                        </div>
-
-                    </div>
+                    <p className="mt-2 text-sm text-zinc-500">
+                        Category calculations will be added next.
+                    </p>
                 </section>
 
             </div>
