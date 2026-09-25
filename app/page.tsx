@@ -62,30 +62,38 @@ export default function Home() {
     );
 
     return (
-        <main className="min-h-screen bg-zinc-950 text-white">
-            <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <main className="min-h-screen bg-[#f7f8fa] text-zinc-900">
+            <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
                 <DashboardHeader />
 
-                <SpendingSummary totalSpending={totalSpending} />
+                <div className="mt-8">
+                    <SpendingSummary totalSpending={totalSpending} />
+                </div>
 
-                <AddExpenseForm
-                    amount={amount}
-                    category={category}
-                    description={description}
-                    date={date}
-                    setAmount={setAmount}
-                    setCategory={setCategory}
-                    setDescription={setDescription}
-                    setDate={setDate}
-                    onSubmit={handleSubmit}
-                />
+                <div className="mt-6">
+                    <AddExpenseForm
+                        amount={amount}
+                        category={category}
+                        description={description}
+                        date={date}
+                        setAmount={setAmount}
+                        setCategory={setCategory}
+                        setDescription={setDescription}
+                        setDate={setDate}
+                        onSubmit={handleSubmit}
+                    />
+                </div>
 
-                <ExpenseList
-                    expenses={expenses}
-                    onDelete={handleDeleteExpense}
-                />
+                <div className="mt-6">
+                    <ExpenseList
+                        expenses={expenses}
+                        onDelete={handleDeleteExpense}
+                    />
+                </div>
 
-                <CategorySpending expenses={expenses} />
+                <div className="mt-6">
+                    <CategorySpending expenses={expenses} />
+                </div>
             </div>
         </main>
     );
