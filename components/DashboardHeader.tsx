@@ -1,3 +1,7 @@
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Wallet } from "lucide-react";
+
 type DashboardHeaderProps = {
     onLogout?: () => void;
 };
@@ -7,33 +11,35 @@ export default function DashboardHeader({
                                         }: DashboardHeaderProps) {
     return (
         <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <div className="mb-3 flex items-center gap-2">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-900 text-white shadow-sm">
-                        ₹
-                    </div>
-
-                    <span className="text-sm font-semibold tracking-wide text-zinc-500">
-            PERSONAL FINANCE
-          </span>
+            <div className="flex items-start gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border bg-card shadow-sm">
+                    <Wallet className="h-5 w-5" />
                 </div>
 
-                <h1 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">
-                    Expense Tracker
-                </h1>
+                <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <h1 className="font-mono text-2xl font-semibold tracking-tight sm:text-3xl">
+                            Expense Tracker
+                        </h1>
 
-                <p className="mt-2 text-sm text-zinc-500 sm:text-base">
-                    Keep track of your spending, one expense at a time.
-                </p>
+                        <Badge variant="secondary">
+                            Personal
+                        </Badge>
+                    </div>
+
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        Keep track of your spending and stay in control.
+                    </p>
+                </div>
             </div>
 
-            <button
-                type="button"
+            <Button
+                variant="outline"
                 onClick={onLogout}
-                className="w-fit rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md active:translate-y-0 active:scale-[0.98]"
+                className="w-fit"
             >
                 Logout
-            </button>
+            </Button>
         </header>
     );
 }
