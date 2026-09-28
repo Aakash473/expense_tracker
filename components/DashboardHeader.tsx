@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Wallet } from "lucide-react";
 import LogoutButton from "@/components/LogoutButton";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function DashboardHeader() {
     return (
@@ -27,7 +28,10 @@ export default function DashboardHeader() {
                 </div>
             </div>
 
-            <LogoutButton />
+            <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <LogoutButton />
+            </div>
         </header>
     );
 }
