@@ -94,7 +94,7 @@ export default function AddExpenseForm({
                                 }}
                             >
                                 <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Select category" />
+                                    <SelectValue/>
                                 </SelectTrigger>
 
                                 <SelectContent>
