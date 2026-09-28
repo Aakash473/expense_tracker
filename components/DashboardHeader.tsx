@@ -1,14 +1,8 @@
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Wallet } from "lucide-react";
+import LogoutButton from "@/components/LogoutButton";
 
-type DashboardHeaderProps = {
-    onLogout?: () => void;
-};
-
-export default function DashboardHeader({
-                                            onLogout,
-                                        }: DashboardHeaderProps) {
+export default function DashboardHeader() {
     return (
         <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3">
@@ -33,13 +27,7 @@ export default function DashboardHeader({
                 </div>
             </div>
 
-            <Button
-                variant="outline"
-                onClick={onLogout}
-                className="w-fit"
-            >
-                Logout
-            </Button>
+            <LogoutButton />
         </header>
     );
 }
