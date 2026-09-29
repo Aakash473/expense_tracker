@@ -8,6 +8,13 @@
       "when": 1790657895618,
       "tag": "0000_sour_shotgun",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790660112954,
+      "tag": "0001_bouncy_living_lightning",
+      "breakpoints": true
     }
   ]
 }

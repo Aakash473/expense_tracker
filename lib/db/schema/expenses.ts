@@ -1,5 +1,4 @@
 import {
-    date,
     index,
     numeric,
     pgTable,
@@ -35,10 +34,6 @@ export const expenses = pgTable(
 
         description: text("description"),
 
-        spentAt: date("spent_at", {
-            mode: "string",
-        }).notNull(),
-
         createdAt: timestamp("created_at", {
             withTimezone: true,
         })
@@ -58,7 +53,6 @@ export const expenses = pgTable(
 
         index("expenses_user_spent_at_idx").on(
             table.userId,
-            table.spentAt,
         ),
     ],
 );
