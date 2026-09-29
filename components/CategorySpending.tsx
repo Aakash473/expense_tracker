@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 
 type Expense = {
-    id: number;
+    id: string;
     category: string;
     description: string;
     amount: number;

@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Trash2 } from "lucide-react";
 
 type Expense = {
-    id: number;
+    id: string;
     category: string;
     description: string;
     amount: number;
@@ -19,7 +19,7 @@ type Expense = {
 
 type ExpenseListProps = {
     expenses: Expense[];
-    onDelete: (id: number) => void;
+    onDelete: (id: string) => void;
 };
 
 const categoryIcons: Record<string, string> = {
