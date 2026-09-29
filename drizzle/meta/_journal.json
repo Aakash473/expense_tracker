@@ -15,6 +15,13 @@
       "when": 1790660112954,
       "tag": "0001_bouncy_living_lightning",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790668143656,
+      "tag": "0002_seed_categories",
+      "breakpoints": true
     }
   ]
 }
