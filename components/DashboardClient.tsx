@@ -5,7 +5,10 @@ import SpendingSummary from "@/components/SpendingSummary";
 import AddExpenseForm from "@/components/AddExpenseForm";
 import ExpenseList from "@/components/ExpenseList";
 import CategorySpending from "@/components/CategorySpending";
-import { createExpense } from "@/app/dashboard/actions";
+import {
+    createExpense,
+    deleteExpense,
+} from "@/app/dashboard/actions";
 
 
 type Category = {
@@ -94,9 +97,13 @@ export default function DashboardClient({
         setDate("");
     };
 
-    const handleDeleteExpense = (id: string) => {
+    const handleDeleteExpense = async (id: string) => {
+        await deleteExpense(id);
+
         setExpenses((currentExpenses) =>
-            currentExpenses.filter((expense) => expense.id !== id)
+            currentExpenses.filter(
+                (expense) => expense.id !== id
+            )
         );
     };
 

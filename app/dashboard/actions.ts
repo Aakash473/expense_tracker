@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { expenses } from "@/lib/db/schema";
 import { getExpenses } from "@/lib/db/queries/expenses";
+import { and, eq } from "drizzle-orm";
 
 type CreateExpenseInput = {
     categoryId: string;
@@ -51,4 +52,25 @@ export async function getUserExpenses() {
     }
 
     return getExpenses(user.id);
+}
+
+export async function deleteExpense(expenseId: string) {
+    const supabase = await createClient();
+
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+        throw new Error("Unauthorized");
+    }
+
+    await db
+        .delete(expenses)
+        .where(
+            and(
+                eq(expenses.id, expenseId),
+                eq(expenses.userId, user.id)
+            )
+        );
 }
