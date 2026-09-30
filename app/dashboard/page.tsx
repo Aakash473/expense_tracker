@@ -3,9 +3,12 @@ import { getUserExpenses } from "./actions";
 import DashboardClient from "@/components/DashboardClient";
 export const dynamic = "force-dynamic";
 
+
 export default async function DashboardPage() {
-    const categories = await getCategories();
-    const expenses = await getUserExpenses();
+    const [categories, expenses] = await Promise.all([
+        getCategories(),
+        getUserExpenses(),
+    ]);
 
     return (
         <DashboardClient
