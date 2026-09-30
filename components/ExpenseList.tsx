@@ -8,14 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Trash2 } from "lucide-react";
-
-type Expense = {
-    id: string;
-    category: string;
-    description: string;
-    amount: number;
-    date: string;
-};
+import type { Expense } from "@/lib/types/expense";
 
 type ExpenseListProps = {
     expenses: Expense[];

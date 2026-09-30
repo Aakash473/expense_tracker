@@ -5,6 +5,7 @@ import SpendingSummary from "@/components/SpendingSummary";
 import AddExpenseForm from "@/components/AddExpenseForm";
 import ExpenseList from "@/components/ExpenseList";
 import CategorySpending from "@/components/CategorySpending";
+import type { Expense, ExpenseRow } from "@/lib/types/expense";
 import {
     createExpense,
     deleteExpense,
@@ -16,26 +17,12 @@ type Category = {
     name: string;
 };
 
-type Expense = {
-    id: string;
-    category: string;
-    description: string;
-    amount: number;
-    date: string;
-};
-
 export default function DashboardClient({
                                             categories,
                                             initialExpenses,
                                         }: {
     categories: Category[];
-    initialExpenses: {
-        id: string;
-        category: string;
-        description: string | null;
-        amount: string;
-        createdAt: Date;
-    }[];
+    initialExpenses: ExpenseRow[];
 }) {
     const [expenses, setExpenses] = useState<Expense[]>(
         initialExpenses.map((expense) => ({
