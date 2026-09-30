@@ -16,7 +16,7 @@ export default function Error({
                 </h2>
 
                 <p className="text-muted-foreground">
-                    We couldn't load your dashboard.
+                    We could not load your dashboard.
                 </p>
 
                 <Button onClick={() => reset()}>
