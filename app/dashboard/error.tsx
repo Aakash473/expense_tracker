@@ -1,13 +1,20 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import  { useEffect } from "react";
+import {error} from "next/dist/build/output/log";
 
-export default function Error({
+export default function DashboardError({
                                   reset,
                               }: {
     error: Error & { digest?: string };
     reset: () => void;
 }) {
+
+    useEffect(() => {
+        console.error(error);
+    }, [error]);
+
     return (
         <main className="flex min-h-screen items-center justify-center bg-background px-4">
             <div className="flex flex-col items-center gap-4 text-center">
