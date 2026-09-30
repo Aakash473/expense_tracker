@@ -15,6 +15,10 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+type Category = {
+    id: string;
+    name: string;
+};
 
 type AddExpenseFormProps = {
     amount: string;
@@ -26,6 +30,7 @@ type AddExpenseFormProps = {
     setDescription: (value: string) => void;
     setDate: (value: string) => void;
     onSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
+    categories: Category[];
 };
 
 export default function AddExpenseForm({
@@ -38,6 +43,7 @@ export default function AddExpenseForm({
                                            setDescription,
                                            setDate,
                                            onSubmit,
+                                           categories
                                        }: AddExpenseFormProps) {
     return (
         <Card className="h-full">
@@ -98,11 +104,14 @@ export default function AddExpenseForm({
                                 </SelectTrigger>
 
                                 <SelectContent>
-                                    <SelectItem id="Food">Food</SelectItem>
-                                    <SelectItem id="Travel">Travel</SelectItem>
-                                    <SelectItem id="Shopping">Shopping</SelectItem>
-                                    <SelectItem id="Bills">Bills</SelectItem>
-                                    <SelectItem id="Other">Other</SelectItem>
+                                    {categories.map((categoryItem) => (
+                                        <SelectItem
+                                            key={categoryItem.id}
+                                            id={categoryItem.name}
+                                        >
+                                            {categoryItem.name}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>

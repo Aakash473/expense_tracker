@@ -6,14 +6,7 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-
-type Expense = {
-    id: number;
-    category: string;
-    description: string;
-    amount: number;
-    date: string;
-};
+import type { Expense } from "@/lib/types/expense";
 
 type CategorySpendingProps = {
     expenses: Expense[];
