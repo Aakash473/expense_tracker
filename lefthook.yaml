@@ -1,7 +1,7 @@
 pre-push:
-  commands:
-    lint:
+  parallel: true
+  jobs:
+    - name: lint
       run: pnpm lint
-
-    typecheck:
+    - name: typecheck
       run: pnpm typecheck
