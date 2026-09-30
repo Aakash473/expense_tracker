@@ -1,0 +1,7 @@
+pre-push:
+  commands:
+    lint:
+      run: pnpm lint
+
+    typecheck:
+      run: pnpm typecheck
