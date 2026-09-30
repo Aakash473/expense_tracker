@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import  { useEffect } from "react";
-import {error} from "next/dist/build/output/log";
 
 export default function DashboardError({
-                                  reset,
-                              }: {
+                                           error,
+                                           reset,
+                                       }: {
     error: Error & { digest?: string };
     reset: () => void;
 }) {
