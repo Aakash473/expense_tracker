@@ -1,16 +1,17 @@
 "use client";
+
 import { useState } from "react";
 import DashboardHeader from "@/components/DashboardHeader";
 import SpendingSummary from "@/components/SpendingSummary";
 import AddExpenseForm from "@/components/AddExpenseForm";
 import ExpenseList from "@/components/ExpenseList";
 import CategorySpending from "@/components/CategorySpending";
+import { toast } from "sonner";
 import type { Expense, ExpenseRow } from "@/lib/types/expense";
 import {
     createExpense,
     deleteExpense,
 } from "@/app/dashboard/actions";
-
 
 type Category = {
     id: string;
@@ -58,13 +59,18 @@ export default function DashboardClient({
             return;
         }
 
-        const savedExpense = await createExpense({
+        const result = await createExpense({
             categoryId: selectedCategory.id,
             amount: Number(amount),
             description,
         });
 
-        console.log("Saved expense:", savedExpense);
+        if (!result.ok) {
+            toast.error(result.error);
+            return;
+        }
+
+        const savedExpense = result.data;
 
         const newExpense: Expense = {
             id: savedExpense.id,
@@ -85,7 +91,12 @@ export default function DashboardClient({
     };
 
     const handleDeleteExpense = async (id: string) => {
-        await deleteExpense(id);
+        const result = await deleteExpense(id);
+
+        if (!result.ok) {
+            toast.error(result.error);
+            return;
+        }
 
         setExpenses((currentExpenses) =>
             currentExpenses.filter(
@@ -107,7 +118,9 @@ export default function DashboardClient({
                 <div className="mt-10 grid grid-cols-12 gap-6">
                     {/* Total Spending */}
                     <div className="col-span-12 lg:col-span-4">
-                        <SpendingSummary totalSpending={totalSpending} />
+                        <SpendingSummary
+                            totalSpending={totalSpending}
+                        />
                     </div>
 
                     {/* Add Expense */}
@@ -136,7 +149,9 @@ export default function DashboardClient({
 
                     {/* Category Statistics */}
                     <div className="col-span-12 lg:col-span-4">
-                        <CategorySpending expenses={expenses} />
+                        <CategorySpending
+                            expenses={expenses}
+                        />
                     </div>
                 </div>
             </div>
