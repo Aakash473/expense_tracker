@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { categories, expenses } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 export async function getExpenses(userId: string) {
     return db
@@ -18,4 +18,35 @@ export async function getExpenses(userId: string) {
         )
         .where(eq(expenses.userId, userId))
         .orderBy(expenses.createdAt);
+}
+
+type InsertExpenseInput = {
+    userId: string;
+    categoryId: string;
+    amount: string;
+    description: string | null;
+};
+
+export async function insertExpense(input: InsertExpenseInput) {
+    const result = await db
+        .insert(expenses)
+        .values(input)
+        .returning();
+
+    return result[0];
+}
+
+export async function deleteUserExpense(
+    userId: string,
+    expenseId: string
+) {
+    return db
+        .delete(expenses)
+        .where(
+            and(
+                eq(expenses.id, expenseId),
+                eq(expenses.userId, userId)
+            )
+        )
+        .returning({ id: expenses.id });
 }

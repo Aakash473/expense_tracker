@@ -118,9 +118,7 @@ export default function DashboardClient({
                 <div className="mt-10 grid grid-cols-12 gap-6">
                     {/* Total Spending */}
                     <div className="col-span-12 lg:col-span-4">
-                        <SpendingSummary
-                            totalSpending={totalSpending}
-                        />
+                        <SpendingSummary totalSpending={totalSpending} />
                     </div>
 
                     {/* Add Expense */}
@@ -149,9 +147,7 @@ export default function DashboardClient({
 
                     {/* Category Statistics */}
                     <div className="col-span-12 lg:col-span-4">
-                        <CategorySpending
-                            expenses={expenses}
-                        />
+                        <CategorySpending expenses={expenses} />
                     </div>
                 </div>
             </div>
