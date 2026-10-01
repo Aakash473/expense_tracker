@@ -5,7 +5,7 @@ import "./globals.css";
 
 import ThemeProvider from "@/components/ThemeProvider";
 import { cn } from "@/lib/utils";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@/shared/ui/ui/sonner";
 
 const jetbrainsMonoHeading = JetBrains_Mono({
   subsets: ["latin"],

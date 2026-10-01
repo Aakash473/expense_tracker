@@ -5,9 +5,30 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  // Override default ignores of eslint-config-next.
+
+  {
+    files: ["features/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
+                "@/features/*/*",
+                "@/features/*/*/*",
+                "@/features/*/*/*/*",
+              ],
+              message:
+                  "Features must not import another feature's internal files. Move shared code into shared/ or expose a deliberate public entry point.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
   globalIgnores([
-    // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
     "build/**",

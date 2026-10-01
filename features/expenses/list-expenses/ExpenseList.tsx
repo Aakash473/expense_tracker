@@ -1,18 +1,25 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Trash2 } from "lucide-react";
+
 import {
     Card,
     CardContent,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Trash2 } from "lucide-react";
-import type { Expense } from "@/lib/types/expense";
+} from "@/shared/ui/ui/card";
+import { Badge } from "@/shared/ui/ui/badge";
+import { Button } from "@/shared/ui/ui/button";
+import { Separator } from "@/shared/ui/ui/separator";
+
+import { deleteExpense } from "@/features/expenses";
+import type { Expense } from "@/shared/types/expense";
 
 type ExpenseListProps = {
     expenses: Expense[];
-    onDelete: (id: string) => void;
 };
 
 const categoryIcons: Record<string, string> = {
@@ -23,21 +30,36 @@ const categoryIcons: Record<string, string> = {
     Other: "•••",
 };
 
-export default function ExpenseList({
-                                        expenses,
-                                        onDelete,
-                                    }: ExpenseListProps) {
+export default function ExpenseList({ expenses }: ExpenseListProps) {
+    const router = useRouter();
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+
+    async function handleDelete(expenseId: string) {
+        setDeletingId(expenseId);
+
+        try {
+            const result = await deleteExpense(expenseId);
+
+            if (!result.ok) {
+                toast.error(result.error);
+                return;
+            }
+
+            toast.success("Expense deleted successfully.");
+            router.refresh();
+        } catch {
+            toast.error("Something went wrong while deleting the expense.");
+        } finally {
+            setDeletingId(null);
+        }
+    }
+
     return (
         <Card className="h-full">
             <CardHeader className="flex flex-row items-start justify-between space-y-0">
                 <div>
-                    <p className="text-sm text-muted-foreground">
-                        Activity
-                    </p>
-
-                    <CardTitle className="mt-1">
-                        Recent Expenses
-                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">Activity</p>
+                    <CardTitle className="mt-1">Recent Expenses</CardTitle>
                 </div>
 
                 {expenses.length > 0 && (
@@ -55,18 +77,14 @@ export default function ExpenseList({
                             ₹
                         </div>
 
-                        <p className="font-medium">
-                            No expenses yet
-                        </p>
+                        <p className="font-medium">No expenses yet</p>
 
                         <p className="mt-1 max-w-xs text-sm text-muted-foreground">
-                            Add your first expense to start tracking your
-                            spending.
+                            Add your first expense to start tracking your spending.
                         </p>
                     </div>
                 ) : (
                     <div>
-                        {/* Table heading */}
                         <div className="hidden grid-cols-[1fr_120px_100px_40px] items-center gap-4 px-3 pb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground sm:grid">
                             <span>Expense</span>
                             <span>Date</span>
@@ -80,7 +98,6 @@ export default function ExpenseList({
                             {expenses.map((expense, index) => (
                                 <div key={expense.id}>
                                     <div className="group grid items-center gap-4 px-3 py-4 transition-colors hover:bg-muted/40 sm:grid-cols-[1fr_120px_100px_40px]">
-                                        {/* Expense */}
                                         <div className="flex min-w-0 items-center gap-3">
                                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-sm">
                                                 {categoryIcons[expense.category] ?? "•••"}
@@ -97,34 +114,31 @@ export default function ExpenseList({
                                             </div>
                                         </div>
 
-                                        {/* Date */}
                                         <p className="hidden text-sm text-muted-foreground sm:block">
                                             {expense.date}
                                         </p>
 
-                                        {/* Amount */}
                                         <p className="text-sm font-semibold sm:text-right">
-                                            ₹{expense.amount.toLocaleString("en-IN")}
+                                            ₹
+                                            {expense.amount.toLocaleString("en-IN")}
                                         </p>
 
-                                        {/* Delete */}
                                         <Button
                                             type="button"
                                             variant="ghost"
                                             size="icon"
-                                            onClick={() => onDelete(expense.id)}
-                                            className="text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"
+                                            isDisabled={deletingId === expense.id}
+                                            onClick={() => handleDelete(expense.id)}
+                                            className="text-muted-foreground opacity-100 transition-opacity hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100"
                                         >
                                             <Trash2 className="h-4 w-4" />
                                             <span className="sr-only">
-                        Delete {expense.description}
-                      </span>
+                                                Delete {expense.description}
+                                            </span>
                                         </Button>
                                     </div>
 
-                                    {index < expenses.length - 1 && (
-                                        <Separator />
-                                    )}
+                                    {index < expenses.length - 1 && <Separator />}
                                 </div>
                             ))}
                         </div>
