@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/shared/supabase/client";
 
 import {
     Card,
@@ -10,10 +10,10 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+} from "@/shared/ui/ui/card";
+import { Input } from "@/shared/ui/ui/input";
+import { Label } from "@/shared/ui/ui/label";
+import { Button } from "@/shared/ui/ui/button";
 
 export default function LoginForm() {
     const router = useRouter();

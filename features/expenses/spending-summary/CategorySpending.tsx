@@ -1,12 +1,13 @@
+
 import {
     Card,
     CardContent,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import type { Expense } from "@/lib/types/expense";
+} from "@/shared/ui/ui/card";
+import { Progress } from "@/shared/ui/ui/progress";
+import { Badge } from "@/shared/ui/ui/badge";
+import type { Expense } from "@/shared/types/expense";
 
 type CategorySpendingProps = {
     expenses: Expense[];

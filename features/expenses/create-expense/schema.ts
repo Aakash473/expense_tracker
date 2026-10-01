@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 export const createExpenseSchema = z.object({
@@ -26,12 +27,4 @@ export const createExpenseSchema = z.object({
         ),
 });
 
-export const deleteExpenseSchema = z.object({
-    expenseId: z.uuid("Expense ID must be a valid UUID"),
-});
-
-export type CreateExpenseInput =
-    z.input<typeof createExpenseSchema>;
-
-export type DeleteExpenseInput =
-    z.input<typeof deleteExpenseSchema>;
+export type CreateExpenseInput = z.input<typeof createExpenseSchema>;

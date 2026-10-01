@@ -1,3 +1,4 @@
+
 export type Expense = {
     id: string;
     category: string;

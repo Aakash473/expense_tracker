@@ -1,6 +1,6 @@
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/shared/ui/ui/badge";
 import { Wallet } from "lucide-react";
-import LogoutButton from "@/components/LogoutButton";
+import LogoutButton from "@/features/auth/logout/LogoutButton";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export default function DashboardHeader() {
