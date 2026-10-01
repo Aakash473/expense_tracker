@@ -5,6 +5,7 @@ import "./globals.css";
 
 import ThemeProvider from "@/components/ThemeProvider";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/sonner";
 
 const jetbrainsMonoHeading = JetBrains_Mono({
   subsets: ["latin"],
@@ -43,6 +44,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col antialiased">
       <ThemeProvider>
         {children}
+          <Toaster />
       </ThemeProvider>
       </body>
       </html>

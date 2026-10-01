@@ -1,16 +1,17 @@
 "use client";
+
 import { useState } from "react";
 import DashboardHeader from "@/components/DashboardHeader";
 import SpendingSummary from "@/components/SpendingSummary";
 import AddExpenseForm from "@/components/AddExpenseForm";
 import ExpenseList from "@/components/ExpenseList";
 import CategorySpending from "@/components/CategorySpending";
+import { toast } from "sonner";
 import type { Expense, ExpenseRow } from "@/lib/types/expense";
 import {
     createExpense,
     deleteExpense,
 } from "@/app/dashboard/actions";
-
 
 type Category = {
     id: string;
@@ -58,13 +59,18 @@ export default function DashboardClient({
             return;
         }
 
-        const savedExpense = await createExpense({
+        const result = await createExpense({
             categoryId: selectedCategory.id,
             amount: Number(amount),
             description,
         });
 
-        console.log("Saved expense:", savedExpense);
+        if (!result.ok) {
+            toast.error(result.error);
+            return;
+        }
+
+        const savedExpense = result.data;
 
         const newExpense: Expense = {
             id: savedExpense.id,
@@ -85,7 +91,12 @@ export default function DashboardClient({
     };
 
     const handleDeleteExpense = async (id: string) => {
-        await deleteExpense(id);
+        const result = await deleteExpense(id);
+
+        if (!result.ok) {
+            toast.error(result.error);
+            return;
+        }
 
         setExpenses((currentExpenses) =>
             currentExpenses.filter(

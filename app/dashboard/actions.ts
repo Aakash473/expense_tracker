@@ -1,76 +1,101 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
-import { db } from "@/lib/db";
-import { expenses } from "@/lib/db/schema";
-import { getExpenses } from "@/lib/db/queries/expenses";
-import { and, eq } from "drizzle-orm";
+import {
+    createExpenseSchema,
+    deleteExpenseSchema,
+    type CreateExpenseInput,
+} from "@/lib/validations/expense";
+import {
+    categoryExists,
+} from "@/lib/db/queries/categories";
+import {
+    getExpenses,
+    insertExpense,
+    deleteUserExpense,
+} from "@/lib/db/queries/expenses";
+import {
+    fail,
+    ok,
+    type ActionResult,
+} from "@/lib/types/action-result";
+import { getCurrentUser } from "@/lib/supabase/auth";
 
-type CreateExpenseInput = {
-    categoryId: string;
-    amount: number;
-    description?: string;
-};
+export async function createExpense(
+    input: CreateExpenseInput
+): Promise<ActionResult<Awaited<ReturnType<typeof insertExpense>>>> {
+    const validation = createExpenseSchema.safeParse(input);
 
-export async function createExpense({
-                                        categoryId,
-                                        amount,
-                                        description,
-                                    }: CreateExpenseInput) {
-    const supabase = await createClient();
-
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-        throw new Error("Unauthorized");
+    if (!validation.success) {
+        return fail(validation.error.issues[0].message);
     }
 
-    const result = await db
-        .insert(expenses)
-        .values({
-            userId: user.id,
-            categoryId,
-            amount: amount.toString(),
-            description: description || null,
-        })
-        .returning();
+    const user = await getCurrentUser();
 
-    return result[0];
+    if (!user) {
+        return fail("Unauthorized");
+    }
+
+    const {
+        categoryId,
+        amount,
+        description,
+    } = validation.data;
+
+    const exists = await categoryExists(categoryId);
+
+    if (!exists) {
+        return fail("Category does not exist");
+    }
+
+    const expense = await insertExpense({
+        userId: user.id,
+        categoryId,
+        amount: amount.toString(),
+        description,
+    });
+
+    return ok(expense);
 }
 
-export async function getUserExpenses() {
-    const supabase = await createClient();
-
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+export async function getUserExpenses(): Promise<
+    ActionResult<Awaited<ReturnType<typeof getExpenses>>>
+> {
+    const user = await getCurrentUser();
 
     if (!user) {
-        throw new Error("Unauthorized");
+        return fail("Unauthorized");
     }
 
-    return getExpenses(user.id);
+    const expenses = await getExpenses(user.id);
+
+    return ok(expenses);
 }
 
-export async function deleteExpense(expenseId: string) {
-    const supabase = await createClient();
+export async function deleteExpense(
+    expenseId: string
+): Promise<ActionResult<{ id: string }>> {
+    const validation = deleteExpenseSchema.safeParse({
+        expenseId,
+    });
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-        throw new Error("Unauthorized");
+    if (!validation.success) {
+        return fail(validation.error.issues[0].message);
     }
 
-    await db
-        .delete(expenses)
-        .where(
-            and(
-                eq(expenses.id, expenseId),
-                eq(expenses.userId, user.id)
-            )
-        );
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return fail("Unauthorized");
+    }
+
+    const deleted = await deleteUserExpense(
+        user.id,
+        validation.data.expenseId
+    );
+
+    if (deleted.length === 0) {
+        return fail("Expense not found");
+    }
+
+    return ok(deleted[0]);
 }
