@@ -1,58 +1,35 @@
-"use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
-
 import {
     Card,
     CardContent,
     CardHeader,
     CardTitle,
-} from "@/shared/ui/ui/card";
-import { Badge } from "@/shared/ui/ui/badge";
-import { Button } from "@/shared/ui/ui/button";
-import { Separator } from "@/shared/ui/ui/separator";
-
-import { deleteExpense } from "@/features/expenses";
-import type { Expense } from "@/shared/types/expense";
+} from "@/shared/ui/card";
+import {
+    Utensils,
+    Plane,
+    ShoppingBag,
+    FileText,
+    MoreHorizontal,
+} from "lucide-react";
+import { Badge } from "@/shared/ui/badge";
+import { Separator } from "@/shared/ui/separator";
+import type { Expense } from "./types";
+import DeleteExpenseButton from "@/features/expenses/delete-expense/DeleteExpenseButton";
 
 type ExpenseListProps = {
     expenses: Expense[];
 };
 
-const categoryIcons: Record<string, string> = {
-    Food: "🍔",
-    Travel: "✈️",
-    Shopping: "🛍️",
-    Bills: "📄",
-    Other: "•••",
+const categoryIcons = {
+    Food: Utensils,
+    Travel: Plane,
+    Shopping: ShoppingBag,
+    Bills: FileText,
+    Other: MoreHorizontal,
 };
 
 export default function ExpenseList({ expenses }: ExpenseListProps) {
-    const router = useRouter();
-    const [deletingId, setDeletingId] = useState<string | null>(null);
 
-    async function handleDelete(expenseId: string) {
-        setDeletingId(expenseId);
-
-        try {
-            const result = await deleteExpense(expenseId);
-
-            if (!result.ok) {
-                toast.error(result.error);
-                return;
-            }
-
-            toast.success("Expense deleted successfully.");
-            router.refresh();
-        } catch {
-            toast.error("Something went wrong while deleting the expense.");
-        } finally {
-            setDeletingId(null);
-        }
-    }
 
     return (
         <Card className="h-full">
@@ -100,7 +77,10 @@ export default function ExpenseList({ expenses }: ExpenseListProps) {
                                     <div className="group grid items-center gap-4 px-3 py-4 transition-colors hover:bg-muted/40 sm:grid-cols-[1fr_120px_100px_40px]">
                                         <div className="flex min-w-0 items-center gap-3">
                                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-sm">
-                                                {categoryIcons[expense.category] ?? "•••"}
+                                                {(() => {
+                                                    const Icon = categoryIcons[expense.category as keyof typeof categoryIcons] ?? MoreHorizontal;
+                                                    return <Icon className="h-5 w-5" />;
+                                                })()}
                                             </div>
 
                                             <div className="min-w-0">
@@ -123,19 +103,10 @@ export default function ExpenseList({ expenses }: ExpenseListProps) {
                                             {expense.amount.toLocaleString("en-IN")}
                                         </p>
 
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="icon"
-                                            isDisabled={deletingId === expense.id}
-                                            onClick={() => handleDelete(expense.id)}
-                                            className="text-muted-foreground opacity-100 transition-opacity hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                            <span className="sr-only">
-                                                Delete {expense.description}
-                                            </span>
-                                        </Button>
+                                        <DeleteExpenseButton
+                                            expenseId={expense.id}
+                                            description={expense.description}
+                                        />
                                     </div>
 
                                     {index < expenses.length - 1 && <Separator />}

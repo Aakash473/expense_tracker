@@ -25,7 +25,7 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/shared/ui/ui/input-group"
+} from "@/shared/ui/input-group"
 import { ChevronDownIcon, SearchIcon, CheckIcon } from "lucide-react"
 
 function Select<T extends object, M extends "single" | "multiple" = "single">({

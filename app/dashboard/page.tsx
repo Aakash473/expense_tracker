@@ -1,38 +1,37 @@
-import DashboardHeader from "@/components/DashboardHeader";
+import { redirect } from "next/navigation";
+
+import DashboardHeader from "@/shared/layout/DashboardHeader";
 
 import CreateExpenseForm from "@/features/expenses/create-expense/CreateExpenseForm";
 import ExpenseList from "@/features/expenses/list-expenses/ExpenseList";
-import type { Expense } from "@/features/expenses/list-expenses/types";
+import { getExpenseSummary } from "@/features/expenses/list-expenses/query";
 
 import SpendingSummary from "@/features/expenses/spending-summary/SpendingSummary";
 import CategorySpending from "@/features/expenses/spending-summary/CategorySpending";
 
-import { getExpenses } from "@/features/expenses/list-expenses/query";
 import { getCategories } from "@/features/categories/list-categories/query";
 import { requireUser } from "@/shared/auth/requireUser";
+import { UnauthorizedError } from "@/shared/auth/UnauthorizedError";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-    const user = await requireUser();
+    let user;
 
-    const [expenseRows, categories] = await Promise.all([
-        getExpenses(user.id),
+    try {
+        user = await requireUser();
+    } catch (error) {
+        if (error instanceof UnauthorizedError) {
+            redirect("/login");
+        }
+
+        throw error;
+    }
+
+    const [expenseSummary, categories] = await Promise.all([
+        getExpenseSummary(user.id),
         getCategories(),
     ]);
-
-    const expenses: Expense[] = expenseRows.map((expense) => ({
-        id: expense.id,
-        category: expense.category,
-        description: expense.description ?? "",
-        amount: Number(expense.amount),
-        date: expense.createdAt.toISOString().split("T")[0],
-    }));
-
-    const totalSpending = expenses.reduce(
-        (total, expense) => total + expense.amount,
-        0
-    );
 
     return (
         <main className="min-h-screen bg-background text-foreground">
@@ -42,7 +41,9 @@ export default async function DashboardPage() {
                 <div className="mt-10 grid grid-cols-12 gap-6">
                     {/* Total Spending */}
                     <div className="col-span-12 lg:col-span-4">
-                        <SpendingSummary totalSpending={totalSpending} />
+                        <SpendingSummary
+                            totalSpending={expenseSummary.totalSpending}
+                        />
                     </div>
 
                     {/* Add Expense */}
@@ -52,12 +53,14 @@ export default async function DashboardPage() {
 
                     {/* Recent Expenses */}
                     <div className="col-span-12 lg:col-span-8">
-                        <ExpenseList expenses={expenses} />
+                        <ExpenseList expenses={expenseSummary.expenses} />
                     </div>
 
                     {/* Category Statistics */}
                     <div className="col-span-12 lg:col-span-4">
-                        <CategorySpending expenses={expenses} />
+                        <CategorySpending
+                            expenses={expenseSummary.expenses}
+                        />
                     </div>
                 </div>
             </div>

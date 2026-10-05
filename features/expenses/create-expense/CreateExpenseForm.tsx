@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { createExpenseSchema } from "./schema";
 
 import { createExpense } from "./action";
 
@@ -12,17 +13,17 @@ import {
     CardContent,
     CardHeader,
     CardTitle,
-} from "@/shared/ui/ui/card";
-import { Input } from "@/shared/ui/ui/input";
-import { Label } from "@/shared/ui/ui/label";
+} from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/shared/ui/ui/select";
-import { Button } from "@/shared/ui/ui/button";
+} from "@/shared/ui/select";
+import { Button } from "@/shared/ui/button";
 
 type Category = {
     id: string;
@@ -48,19 +49,21 @@ export default function CreateExpenseForm({
     ) {
         event.preventDefault();
 
-        if (!amount || !description.trim() || !category) {
-            toast.error("Please fill in all required fields.");
+        const validation = createExpenseSchema.safeParse({
+            categoryId: category,
+            amount: Number(amount),
+            description: description.trim(),
+        });
+
+        if (!validation.success) {
+            toast.error(validation.error.issues[0].message);
             return;
         }
 
         setIsSubmitting(true);
 
         try {
-            const result = await createExpense({
-                categoryId: category,
-                amount: Number(amount),
-                description: description.trim(),
-            });
+            const result = await createExpense(validation.data);
 
             if (!result.ok) {
                 toast.error(result.error);

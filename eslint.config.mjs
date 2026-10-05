@@ -15,12 +15,13 @@ const eslintConfig = defineConfig([
           patterns: [
             {
               group: [
-                "@/features/*/*",
-                "@/features/*/*/*",
-                "@/features/*/*/*/*",
+                "@/features/categories/**",
+                "@/features/auth/**",
+                "../../categories/**",
+                "../../auth/**",
               ],
               message:
-                  "Features must not import another feature's internal files. Move shared code into shared/ or expose a deliberate public entry point.",
+                  "Expense features must not import category or auth feature internals. Use shared infrastructure instead.",
             },
           ],
         },

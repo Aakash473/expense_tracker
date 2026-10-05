@@ -6,6 +6,7 @@ import { deleteUserExpense } from "./query";
 import { fail, ok, type ActionResult } from "@/shared/result";
 import { requireUser } from "@/shared/auth/requireUser";
 import { revalidatePath } from "next/cache";
+import { UnauthorizedError } from "@/shared/auth/UnauthorizedError";
 
 export async function deleteExpense(
     expenseId: string
@@ -32,7 +33,7 @@ export async function deleteExpense(
 
         return ok(deleted[0]);
     } catch (error) {
-        if (error instanceof Error && error.message === "Unauthorized") {
+        if (error instanceof UnauthorizedError) {
             return fail("Unauthorized");
         }
 

@@ -3,8 +3,8 @@ import {
     CardContent,
     CardHeader,
     CardTitle,
-} from "@/shared/ui/ui/card";
-import { Badge } from "@/shared/ui/ui/badge";
+} from "@/shared/ui/card";
+import { Badge } from "@/shared/ui/badge";
 
 type SpendingSummaryProps = {
     totalSpending: number;

@@ -1,9 +1,9 @@
-import { Skeleton } from "@/shared/ui/ui/skeleton";
+import { Skeleton } from "@/shared/ui/skeleton";
 import {
     Card,
     CardContent,
     CardHeader,
-} from "@/shared/ui/ui/card";
+} from "@/shared/ui/card";
 
 export default function Loading() {
     return (

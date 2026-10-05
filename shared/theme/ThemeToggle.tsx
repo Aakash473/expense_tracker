@@ -3,7 +3,7 @@
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
-import { Toggle } from "@/shared/ui/ui/toggle";
+import { Toggle } from "@/shared/ui/toggle";
 
 export default function ThemeToggle() {
     const { theme, setTheme } = useTheme();

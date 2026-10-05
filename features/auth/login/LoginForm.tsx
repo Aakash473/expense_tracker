@@ -10,10 +10,10 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/shared/ui/ui/card";
-import { Input } from "@/shared/ui/ui/input";
-import { Label } from "@/shared/ui/ui/label";
-import { Button } from "@/shared/ui/ui/button";
+} from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Button } from "@/shared/ui/button";
 
 export default function LoginForm() {
     const router = useRouter();

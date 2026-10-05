@@ -1,5 +1,5 @@
-
 import { createClient } from "@/shared/supabase/server";
+import { UnauthorizedError } from "./UnauthorizedError";
 
 export async function requireUser() {
     const supabase = await createClient();
@@ -10,7 +10,7 @@ export async function requireUser() {
     } = await supabase.auth.getUser();
 
     if (error || !user) {
-        throw new Error("Unauthorized");
+        throw new UnauthorizedError();
     }
 
     return user;

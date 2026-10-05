@@ -9,6 +9,7 @@ import { categoryExists, insertExpense } from "./query";
 import { fail, ok, type ActionResult } from "@/shared/result";
 import { requireUser } from "@/shared/auth/requireUser";
 import { revalidatePath } from "next/cache";
+import { UnauthorizedError } from "@/shared/auth/UnauthorizedError";
 
 export async function createExpense(
     input: CreateExpenseInput
@@ -41,7 +42,7 @@ export async function createExpense(
 
         return ok(expense);
     } catch (error) {
-        if (error instanceof Error && error.message === "Unauthorized") {
+        if (error instanceof UnauthorizedError) {
             return fail("Unauthorized");
         }
 
