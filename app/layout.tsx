@@ -3,9 +3,9 @@ import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
 
 import "./globals.css";
 
-import ThemeProvider from "@/components/ThemeProvider";
-import { cn } from "@/lib/utils";
-import { Toaster } from "@/components/ui/sonner";
+import ThemeProvider from "@/shared/theme/ThemeProvider";
+import { cn } from "@/shared/utils";
+import { Toaster } from "@/shared/ui/sonner";
 
 const jetbrainsMonoHeading = JetBrains_Mono({
   subsets: ["latin"],

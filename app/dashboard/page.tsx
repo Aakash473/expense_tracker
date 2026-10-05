@@ -1,22 +1,69 @@
-import { getCategories } from "@/lib/db/queries/categories";
-import { getUserExpenses } from "./actions";
-import DashboardClient from "@/components/DashboardClient";
+import { redirect } from "next/navigation";
+
+import DashboardHeader from "@/shared/layout/DashboardHeader";
+
+import CreateExpenseForm from "@/features/expenses/create-expense/CreateExpenseForm";
+import ExpenseList from "@/features/expenses/list-expenses/ExpenseList";
+import { getExpenseSummary } from "@/features/expenses/list-expenses/query";
+
+import SpendingSummary from "@/features/expenses/spending-summary/SpendingSummary";
+import CategorySpending from "@/features/expenses/spending-summary/CategorySpending";
+
+import { getCategories } from "@/features/categories/list-categories/query";
+import { requireUser } from "@/shared/auth/requireUser";
+import { UnauthorizedError } from "@/shared/auth/UnauthorizedError";
+
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-    const [categories, expensesResult] = await Promise.all([
-        getCategories(),
-        getUserExpenses(),
-    ]);
+    let user;
 
-    if (!expensesResult.ok) {
-        throw new Error(expensesResult.error);
+    try {
+        user = await requireUser();
+    } catch (error) {
+        if (error instanceof UnauthorizedError) {
+            redirect("/login");
+        }
+
+        throw error;
     }
 
+    const [expenseSummary, categories] = await Promise.all([
+        getExpenseSummary(user.id),
+        getCategories(),
+    ]);
+
     return (
-        <DashboardClient
-            categories={categories}
-            initialExpenses={expensesResult.data}
-        />
+        <main className="min-h-screen bg-background text-foreground">
+            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+                <DashboardHeader />
+
+                <div className="mt-10 grid grid-cols-12 gap-6">
+                    {/* Total Spending */}
+                    <div className="col-span-12 lg:col-span-4">
+                        <SpendingSummary
+                            totalSpending={expenseSummary.totalSpending}
+                        />
+                    </div>
+
+                    {/* Add Expense */}
+                    <div className="col-span-12 lg:col-span-8">
+                        <CreateExpenseForm categories={categories} />
+                    </div>
+
+                    {/* Recent Expenses */}
+                    <div className="col-span-12 lg:col-span-8">
+                        <ExpenseList expenses={expenseSummary.expenses} />
+                    </div>
+
+                    {/* Category Statistics */}
+                    <div className="col-span-12 lg:col-span-4">
+                        <CategorySpending
+                            expenses={expenseSummary.expenses}
+                        />
+                    </div>
+                </div>
+            </div>
+        </main>
     );
 }
