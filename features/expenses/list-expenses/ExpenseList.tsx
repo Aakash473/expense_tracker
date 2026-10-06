@@ -18,6 +18,7 @@ import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
 import type { Expense } from "./types";
 import DeleteExpenseButton from "@/features/expenses/delete-expense/DeleteExpenseButton";
+import { Button } from "@/shared/ui/button";
 import {
     useCallback,
     useEffect,
@@ -215,21 +216,19 @@ export default function ExpenseList() {
                             </Badge>
                         )}
 
-                    <button
+                    <Button
                         type="button"
                         onClick={fetchExpenses}
-                        className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm transition-colors hover:bg-muted"
+                        variant="outline"
+                        size="sm"
                     >
                         <RefreshCw
                             className={`h-4 w-4 ${
-                                isFetching
-                                    ? "animate-spin"
-                                    : ""
+                                isFetching ? "animate-spin" : ""
                             }`}
                         />
-
                         Refresh
-                    </button>
+                    </Button>
                 </div>
             </CardHeader>
 
@@ -264,13 +263,14 @@ export default function ExpenseList() {
                             {state.error}
                         </p>
 
-                        <button
+                        <Button
                             type="button"
                             onClick={fetchExpenses}
-                            className="mt-4 rounded-md border px-4 py-2 text-sm transition-colors hover:bg-muted"
+                            variant="outline"
+                            className="mt-4"
                         >
                             Retry
-                        </button>
+                        </Button>
                     </div>
                 ) : state.data !== null &&
                 isSuccess &&
@@ -297,13 +297,14 @@ export default function ExpenseList() {
                                     Couldn&apos;t refresh expenses.
                                 </p>
 
-                                <button
+                                <Button
                                     type="button"
                                     onClick={fetchExpenses}
-                                    className="text-sm font-medium hover:underline"
+                                    variant="ghost"
+                                    size="sm"
                                 >
                                     Retry
-                                </button>
+                                </Button>
                             </div>
                         )}
 
@@ -326,7 +327,7 @@ export default function ExpenseList() {
                                         : ""
                                 }
                             >
-                                {state.data?.map(
+                                {state.data.map(
                                     (expense, index) => (
                                         <div key={expense.id}>
                                             <div className="group grid items-center gap-4 px-3 py-4 transition-colors hover:bg-muted/40 sm:grid-cols-[1fr_120px_100px_40px]">
@@ -348,15 +349,11 @@ export default function ExpenseList() {
 
                                                     <div className="min-w-0">
                                                         <p className="truncate text-sm font-medium">
-                                                            {
-                                                                expense.description
-                                                            }
+                                                            {expense.description}
                                                         </p>
 
                                                         <p className="mt-0.5 text-xs text-muted-foreground">
-                                                            {
-                                                                expense.category
-                                                            }
+                                                            {expense.category}
                                                         </p>
                                                     </div>
                                                 </div>
