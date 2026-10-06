@@ -1,8 +1,10 @@
+import { type } from "arktype";
 
-import { z } from "zod";
-
-export const deleteExpenseSchema = z.object({
-    expenseId: z.uuid("Expense ID must be a valid UUID"),
+export const deleteExpenseSchema = type({
+    expenseId: type("string.uuid").configure({
+        message: "Expense ID must be a valid UUID",
+    }),
 });
 
-export type DeleteExpenseInput = z.input<typeof deleteExpenseSchema>;
+export type DeleteExpenseInput =
+    typeof deleteExpenseSchema.inferIn;

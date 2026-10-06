@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createExpenseSchema } from "./schema";
+import { type } from "arktype";
 
 import { createExpense } from "./action";
 
@@ -49,21 +50,21 @@ export default function CreateExpenseForm({
     ) {
         event.preventDefault();
 
-        const validation = createExpenseSchema.safeParse({
+        const validation = createExpenseSchema({
             categoryId: category,
             amount: Number(amount),
             description: description.trim(),
         });
 
-        if (!validation.success) {
-            toast.error(validation.error.issues[0].message);
+        if (validation instanceof type.errors) {
+            toast.error(validation[0].message);
             return;
         }
 
         setIsSubmitting(true);
 
         try {
-            const result = await createExpense(validation.data);
+            const result = await createExpense(validation);
 
             if (!result.ok) {
                 toast.error(result.error);

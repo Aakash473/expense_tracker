@@ -8,7 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { authUsers } from "drizzle-orm/supabase";
 
-import { categories } from "./categories";
+import { categories } from "./categories.table";
 
 export const expenses = pgTable(
     "expenses",

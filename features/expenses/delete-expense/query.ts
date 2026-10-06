@@ -1,6 +1,6 @@
 
 import { db } from "@/shared/db";
-import { expenses } from "@/shared/db/schema";
+import { expenses } from "@/shared/db/tables";
 import { and, eq } from "drizzle-orm";
 
 export async function deleteUserExpense(
