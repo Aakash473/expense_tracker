@@ -18,11 +18,18 @@ import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
 import type { Expense } from "./types";
 import DeleteExpenseButton from "@/features/expenses/delete-expense/DeleteExpenseButton";
-import { useCallback, useEffect, useReducer, useRef } from "react";
+import {
+    useCallback,
+    useEffect,
+    useReducer,
+    useRef,
+} from "react";
+import { Skeleton } from "@/shared/ui/skeleton";
+
 type QueryState = {
     status: "pending" | "error" | "success";
     fetchStatus: "fetching" | "idle";
-    data: Expense[];
+    data: Expense[] | null;
     error: string | null;
 };
 
@@ -40,7 +47,6 @@ function queryReducer(
             return {
                 ...state,
                 fetchStatus: "fetching",
-                error: null,
             };
 
         case "FETCH_SUCCESS":
@@ -72,12 +78,11 @@ const categoryIcons = {
 export default function ExpenseList() {
     const [state, dispatch] = useReducer(queryReducer, {
         status: "pending",
-        fetchStatus: "idle",
-        data: [],
+        fetchStatus: "fetching",
+        data: null,
         error: null,
     });
 
-    const requestIdRef = useRef(0);
     const abortControllerRef = useRef<AbortController | null>(null);
 
     const fetchExpenses = useCallback(async () => {
@@ -86,8 +91,6 @@ export default function ExpenseList() {
         const controller = new AbortController();
         abortControllerRef.current = controller;
 
-        const requestId = ++requestIdRef.current;
-
         dispatch({ type: "FETCH_START" });
 
         try {
@@ -95,16 +98,19 @@ export default function ExpenseList() {
                 signal: controller.signal,
             });
 
+            if (response.redirected) {
+                throw new Error(
+                    "Your session has expired. Please log in again."
+                );
+            }
+
             if (!response.ok) {
                 throw new Error("Failed to fetch expenses");
             }
 
             const data: Expense[] = await response.json();
 
-            if (
-                controller.signal.aborted ||
-                requestId !== requestIdRef.current
-            ) {
+            if (controller.signal.aborted) {
                 return;
             }
 
@@ -113,10 +119,7 @@ export default function ExpenseList() {
                 data,
             });
         } catch (error) {
-            if (
-                controller.signal.aborted ||
-                requestId !== requestIdRef.current
-            ) {
+            if (controller.signal.aborted) {
                 return;
             }
 
@@ -135,14 +138,22 @@ export default function ExpenseList() {
     }, [fetchExpenses]);
 
     useEffect(() => {
-        function handleFocus() {
-            fetchExpenses();
+        function handleVisibilityChange() {
+            if (document.visibilityState === "visible") {
+                fetchExpenses();
+            }
         }
 
-        window.addEventListener("focus", handleFocus);
+        document.addEventListener(
+            "visibilitychange",
+            handleVisibilityChange
+        );
 
         return () => {
-            window.removeEventListener("focus", handleFocus);
+            document.removeEventListener(
+                "visibilitychange",
+                handleVisibilityChange
+            );
         };
     }, [fetchExpenses]);
 
@@ -178,6 +189,8 @@ export default function ExpenseList() {
 
     const isError = state.status === "error";
 
+    const isSuccess = state.status === "success";
+
     return (
         <Card className="h-full">
             <CardHeader className="flex flex-row items-start justify-between space-y-0">
@@ -192,24 +205,26 @@ export default function ExpenseList() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {state.data.length > 0 && (
-                        <Badge variant="secondary">
-                            {state.data.length}{" "}
-                            {state.data.length === 1
-                                ? "expense"
-                                : "expenses"}
-                        </Badge>
-                    )}
+                    {state.data !== null &&
+                        state.data.length > 0 && (
+                            <Badge variant="secondary">
+                                {state.data.length}{" "}
+                                {state.data.length === 1
+                                    ? "expense"
+                                    : "expenses"}
+                            </Badge>
+                        )}
 
                     <button
                         type="button"
                         onClick={fetchExpenses}
-                        disabled={isFetching}
-                        className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+                        className="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm transition-colors hover:bg-muted"
                     >
                         <RefreshCw
                             className={`h-4 w-4 ${
-                                isFetching ? "animate-spin" : ""
+                                isFetching
+                                    ? "animate-spin"
+                                    : ""
                             }`}
                         />
 
@@ -220,12 +235,26 @@ export default function ExpenseList() {
 
             <CardContent>
                 {isLoading ? (
-                    <div className="flex min-h-[260px] items-center justify-center">
-                        <p className="text-sm text-muted-foreground">
-                            Loading expenses...
-                        </p>
+                    <div className="space-y-4 py-4">
+                        {Array.from({ length: 5 }).map(
+                            (_, index) => (
+                                <div
+                                    key={index}
+                                    className="flex items-center gap-3 px-3 py-2"
+                                >
+                                    <Skeleton className="h-10 w-10 rounded-xl" />
+
+                                    <div className="flex-1 space-y-2">
+                                        <Skeleton className="h-4 w-32" />
+                                        <Skeleton className="h-3 w-20" />
+                                    </div>
+
+                                    <Skeleton className="h-4 w-20" />
+                                </div>
+                            )
+                        )}
                     </div>
-                ) : isError && state.data.length === 0 ? (
+                ) : isError && state.data === null ? (
                     <div className="flex min-h-[260px] flex-col items-center justify-center rounded-xl bg-muted/40 px-6 text-center">
                         <p className="font-medium">
                             Failed to load expenses
@@ -234,8 +263,18 @@ export default function ExpenseList() {
                         <p className="mt-1 max-w-xs text-sm text-muted-foreground">
                             {state.error}
                         </p>
+
+                        <button
+                            type="button"
+                            onClick={fetchExpenses}
+                            className="mt-4 rounded-md border px-4 py-2 text-sm transition-colors hover:bg-muted"
+                        >
+                            Retry
+                        </button>
                     </div>
-                ) : state.data.length === 0 ? (
+                ) : state.data !== null &&
+                isSuccess &&
+                state.data.length === 0 ? (
                     <div className="flex min-h-[260px] flex-col items-center justify-center rounded-xl bg-muted/40 px-6 text-center">
                         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-background shadow-sm">
                             ₹
@@ -246,70 +285,113 @@ export default function ExpenseList() {
                         </p>
 
                         <p className="mt-1 max-w-xs text-sm text-muted-foreground">
-                            Add your first expense to start tracking your spending.
+                            Add your first expense to start
+                            tracking your spending.
                         </p>
                     </div>
-                ) : (
-                    <div>
-                        <div className="hidden grid-cols-[1fr_120px_100px_40px] items-center gap-4 px-3 pb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground sm:grid">
-                            <span>Expense</span>
-                            <span>Date</span>
-                            <span className="text-right">Amount</span>
-                            <span />
-                        </div>
+                ) : state.data !== null ? (
+                    <>
+                        {isError && (
+                            <div className="mb-4 flex items-center justify-between rounded-md border px-3 py-2">
+                                <p className="text-sm text-muted-foreground">
+                                    Couldn&apos;t refresh expenses.
+                                </p>
 
-                        <Separator />
+                                <button
+                                    type="button"
+                                    onClick={fetchExpenses}
+                                    className="text-sm font-medium hover:underline"
+                                >
+                                    Retry
+                                </button>
+                            </div>
+                        )}
 
                         <div>
-                            {state.data.map((expense, index) => (
-                                <div key={expense.id}>
-                                    <div className="group grid items-center gap-4 px-3 py-4 transition-colors hover:bg-muted/40 sm:grid-cols-[1fr_120px_100px_40px]">
-                                        <div className="flex min-w-0 items-center gap-3">
-                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-sm">
-                                                {(() => {
-                                                    const Icon =
-                                                        categoryIcons[
-                                                            expense.category as keyof typeof categoryIcons
-                                                            ] ?? MoreHorizontal;
+                            <div className="hidden grid-cols-[1fr_120px_100px_40px] items-center gap-4 px-3 pb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground sm:grid">
+                                <span>Expense</span>
+                                <span>Date</span>
+                                <span className="text-right">
+                                    Amount
+                                </span>
+                                <span />
+                            </div>
 
-                                                    return (
-                                                        <Icon className="h-5 w-5" />
-                                                    );
-                                                })()}
-                                            </div>
+                            <Separator />
 
-                                            <div className="min-w-0">
-                                                <p className="truncate text-sm font-medium">
-                                                    {expense.description}
+                            <div
+                                className={
+                                    state.data.length > 5
+                                        ? "expense-list-scroll max-h-[360px] overflow-y-auto pr-2"
+                                        : ""
+                                }
+                            >
+                                {state.data?.map(
+                                    (expense, index) => (
+                                        <div key={expense.id}>
+                                            <div className="group grid items-center gap-4 px-3 py-4 transition-colors hover:bg-muted/40 sm:grid-cols-[1fr_120px_100px_40px]">
+                                                <div className="flex min-w-0 items-center gap-3">
+                                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-sm">
+                                                        {(() => {
+                                                            const Icon =
+                                                                categoryIcons[
+                                                                    expense
+                                                                        .category as keyof typeof categoryIcons
+                                                                    ] ??
+                                                                MoreHorizontal;
+
+                                                            return (
+                                                                <Icon className="h-5 w-5" />
+                                                            );
+                                                        })()}
+                                                    </div>
+
+                                                    <div className="min-w-0">
+                                                        <p className="truncate text-sm font-medium">
+                                                            {
+                                                                expense.description
+                                                            }
+                                                        </p>
+
+                                                        <p className="mt-0.5 text-xs text-muted-foreground">
+                                                            {
+                                                                expense.category
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <p className="hidden text-sm text-muted-foreground sm:block">
+                                                    {expense.date}
                                                 </p>
 
-                                                <p className="mt-0.5 text-xs text-muted-foreground">
-                                                    {expense.category}
+                                                <p className="text-sm font-semibold sm:text-right">
+                                                    ₹
+                                                    {expense.amount.toLocaleString(
+                                                        "en-IN"
+                                                    )}
                                                 </p>
+
+                                                <DeleteExpenseButton
+                                                    expenseId={
+                                                        expense.id
+                                                    }
+                                                    description={
+                                                        expense.description
+                                                    }
+                                                />
                                             </div>
+
+                                            {index < (state.data?.length ?? 0) - 1 && (
+                                                    <Separator />
+                                                )}
                                         </div>
-
-                                        <p className="hidden text-sm text-muted-foreground sm:block">
-                                            {expense.date}
-                                        </p>
-
-                                        <p className="text-sm font-semibold sm:text-right">
-                                            ₹
-                                            {expense.amount.toLocaleString("en-IN")}
-                                        </p>
-
-                                        <DeleteExpenseButton
-                                            expenseId={expense.id}
-                                            description={expense.description}
-                                        />
-                                    </div>
-
-                                    {index < state.data.length - 1 && <Separator />}
-                                </div>
-                            ))}
+                                    )
+                                )}
+                            </div>
                         </div>
-                    </div>
-                )}
+                    </>
+                ) : null}
             </CardContent>
         </Card>
     );
