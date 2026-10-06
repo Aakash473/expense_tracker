@@ -7,14 +7,15 @@ import { fail, ok, type ActionResult } from "@/shared/result";
 import { requireUser } from "@/shared/auth/requireUser";
 import { revalidatePath } from "next/cache";
 import { UnauthorizedError } from "@/shared/auth/UnauthorizedError";
+import { type } from "arktype";
 
 export async function deleteExpense(
     expenseId: string
 ): Promise<ActionResult<{ id: string }>> {
-    const validation = deleteExpenseSchema.safeParse({ expenseId });
+    const validation = deleteExpenseSchema({ expenseId });
 
-    if (!validation.success) {
-        return fail(validation.error.issues[0].message);
+    if (validation instanceof type.errors) {
+        return fail(validation.summary);
     }
 
     try {
@@ -22,7 +23,7 @@ export async function deleteExpense(
 
         const deleted = await deleteUserExpense(
             user.id,
-            validation.data.expenseId
+            validation.expenseId
         );
 
         if (deleted.length === 0) {

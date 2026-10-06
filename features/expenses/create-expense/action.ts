@@ -10,20 +10,21 @@ import { fail, ok, type ActionResult } from "@/shared/result";
 import { requireUser } from "@/shared/auth/requireUser";
 import { revalidatePath } from "next/cache";
 import { UnauthorizedError } from "@/shared/auth/UnauthorizedError";
+import { type } from "arktype";
 
 export async function createExpense(
     input: CreateExpenseInput
 ): Promise<ActionResult<Awaited<ReturnType<typeof insertExpense>>>> {
-    const validation = createExpenseSchema.safeParse(input);
+    const validation = createExpenseSchema(input);
 
-    if (!validation.success) {
-        return fail(validation.error.issues[0].message);
+    if (validation instanceof type.errors) {
+        return fail(validation.summary);
     }
 
     try {
         const user = await requireUser();
 
-        const { categoryId, amount, description } = validation.data;
+        const { categoryId, amount, description } = validation;
 
         const exists = await categoryExists(categoryId);
 
