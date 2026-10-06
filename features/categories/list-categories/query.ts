@@ -1,6 +1,6 @@
 
 import { db } from "@/shared/db";
-import { categories } from "@/shared/db/schema";
+import { categories } from "@/shared/db/tables";
 
 export async function getCategories() {
     return db

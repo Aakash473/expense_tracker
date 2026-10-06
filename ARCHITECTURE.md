@@ -73,8 +73,9 @@ Business rules and use-case-specific validation remain within their respective f
 
 ### 5. Keep Database Schema Centralized
 
-Drizzle table definitions stay together in `shared/db/schema/`, with migrations and database configuration maintained centrally.
-
+Drizzle table definitions stay together in `shared/db/tables/`, with migrations and database configuration maintained centrally.
+- `*.table.ts` files define Drizzle database tables.
+- `schema.ts` files are used for input validation.
 ### 6. Prefer Server Components
 
 Use Server Components for data fetching and rendering where practical. Client Components should be introduced when browser interaction or client-side state requires them.

@@ -1,6 +1,6 @@
 
 import { db } from "@/shared/db";
-import { categories, expenses } from "@/shared/db/schema";
+import { categories, expenses } from "@/shared/db/tables";
 import { eq } from "drizzle-orm";
 
 type InsertExpenseInput = {
