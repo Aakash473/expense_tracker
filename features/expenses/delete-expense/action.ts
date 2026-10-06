@@ -15,7 +15,7 @@ export async function deleteExpense(
     const validation = deleteExpenseSchema({ expenseId });
 
     if (validation instanceof type.errors) {
-        return fail(validation.summary);
+        return fail(validation[0].message);
     }
 
     try {

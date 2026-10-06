@@ -18,7 +18,7 @@ export async function createExpense(
     const validation = createExpenseSchema(input);
 
     if (validation instanceof type.errors) {
-        return fail(validation.summary);
+        return fail(validation[0].message);
     }
 
     try {

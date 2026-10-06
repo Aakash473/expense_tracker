@@ -57,7 +57,7 @@ export default function CreateExpenseForm({
         });
 
         if (validation instanceof type.errors) {
-            toast.error(validation.summary);
+            toast.error(validation[0].message);
             return;
         }
 
