@@ -30,6 +30,7 @@ export default function DeleteExpenseButton({
             }
 
             toast.success("Expense deleted successfully.");
+            window.dispatchEvent(new Event("expenses:changed"));
         } catch {
             toast.error("Something went wrong while deleting the expense.");
         } finally {

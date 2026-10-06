@@ -53,7 +53,7 @@ export default async function DashboardPage() {
 
                     {/* Recent Expenses */}
                     <div className="col-span-12 lg:col-span-8">
-                        <ExpenseList expenses={expenseSummary.expenses} />
+                        <ExpenseList />
                     </div>
 
                     {/* Category Statistics */}
