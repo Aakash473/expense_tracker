@@ -23,10 +23,6 @@ export default function DashboardHeader() {
                                 Personal
                             </Badge>
                         </div>
-
-                        <p className="hidden truncate text-sm text-muted-foreground sm:block">
-                            Keep track of your spending and stay in control.
-                        </p>
                     </div>
 
                     <div className="flex shrink-0 items-center gap-2">
