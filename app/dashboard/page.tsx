@@ -35,10 +35,10 @@ export default async function DashboardPage() {
 
     return (
         <main className="min-h-screen bg-background text-foreground">
-            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-                <DashboardHeader />
+            <DashboardHeader />
 
-                <div className="mt-10 grid grid-cols-12 gap-6">
+            <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-12 gap-6">
                     {/* Total Spending */}
                     <div className="col-span-12 lg:col-span-4">
                         <SpendingSummary
