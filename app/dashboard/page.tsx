@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 import DashboardHeader from "@/shared/layout/DashboardHeader";
 
-import CreateExpenseForm from "@/features/expenses/create-expense/CreateExpenseForm";
+import CreateExpenseDialog from "@/features/expenses/create-expense/CreateExpenseDialog";
 import ExpenseList from "@/features/expenses/list-expenses/ExpenseList";
 import { getExpenseSummary } from "@/features/expenses/list-expenses/query";
 
@@ -35,7 +35,11 @@ export default async function DashboardPage() {
 
     return (
         <main className="min-h-screen bg-background text-foreground">
-            <DashboardHeader />
+            <DashboardHeader
+                actions={
+                    <CreateExpenseDialog categories={categories} />
+                }
+            />
 
             <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-12 gap-6">
@@ -44,11 +48,6 @@ export default async function DashboardPage() {
                         <SpendingSummary
                             totalSpending={expenseSummary.totalSpending}
                         />
-                    </div>
-
-                    {/* Add Expense */}
-                    <div className="col-span-12 lg:col-span-8">
-                        <CreateExpenseForm categories={categories} />
                     </div>
 
                     {/* Recent Expenses */}

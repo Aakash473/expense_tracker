@@ -1,9 +1,16 @@
 import { Badge } from "@/shared/ui/badge";
 import { Wallet } from "lucide-react";
+
 import LogoutButton from "@/features/auth/logout/LogoutButton";
 import ThemeToggle from "@/shared/theme/ThemeToggle";
 
-export default function DashboardHeader() {
+type DashboardHeaderProps = {
+    actions?: React.ReactNode;
+};
+
+export default function DashboardHeader({
+                                            actions,
+                                        }: DashboardHeaderProps) {
     return (
         <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -23,9 +30,12 @@ export default function DashboardHeader() {
                                 Personal
                             </Badge>
                         </div>
+
                     </div>
 
                     <div className="flex shrink-0 items-center gap-2">
+                        {actions}
+
                         <ThemeToggle />
                         <LogoutButton />
                     </div>
