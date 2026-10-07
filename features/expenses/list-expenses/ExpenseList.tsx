@@ -19,54 +19,9 @@ import { Separator } from "@/shared/ui/separator";
 import type { Expense } from "./types";
 import DeleteExpenseButton from "@/features/expenses/delete-expense/DeleteExpenseButton";
 import { Button } from "@/shared/ui/button";
-import {
-    useCallback,
-    useEffect,
-    useReducer,
-    useRef,
-} from "react";
+import { useEffect } from "react";
 import { Skeleton } from "@/shared/ui/skeleton";
-
-type QueryState = {
-    status: "pending" | "error" | "success";
-    fetchStatus: "fetching" | "idle";
-    data: Expense[] | null;
-    error: string | null;
-};
-
-type QueryAction =
-    | { type: "FETCH_START" }
-    | { type: "FETCH_SUCCESS"; data: Expense[] }
-    | { type: "FETCH_ERROR"; error: string };
-
-function queryReducer(
-    state: QueryState,
-    action: QueryAction
-): QueryState {
-    switch (action.type) {
-        case "FETCH_START":
-            return {
-                ...state,
-                fetchStatus: "fetching",
-            };
-
-        case "FETCH_SUCCESS":
-            return {
-                status: "success",
-                fetchStatus: "idle",
-                data: action.data,
-                error: null,
-            };
-
-        case "FETCH_ERROR":
-            return {
-                ...state,
-                status: "error",
-                fetchStatus: "idle",
-                error: action.error,
-            };
-    }
-}
+import { useQuery } from "@tanstack/react-query";
 
 const categoryIcons = {
     Food: Utensils,
@@ -77,26 +32,19 @@ const categoryIcons = {
 };
 
 export default function ExpenseList() {
-    const [state, dispatch] = useReducer(queryReducer, {
-        status: "pending",
-        fetchStatus: "fetching",
-        data: null,
-        error: null,
-    });
-
-    const abortControllerRef = useRef<AbortController | null>(null);
-
-    const fetchExpenses = useCallback(async () => {
-        abortControllerRef.current?.abort();
-
-        const controller = new AbortController();
-        abortControllerRef.current = controller;
-
-        dispatch({ type: "FETCH_START" });
-
-        try {
+    const {
+        data,
+        error,
+        isLoading,
+        isFetching,
+        isError,
+        isSuccess,
+        refetch,
+    } = useQuery({
+        queryKey: ["expenses"],
+        queryFn: async ({ signal }) => {
             const response = await fetch("/api/expenses", {
-                signal: controller.signal,
+                signal,
             });
 
             if (response.redirected) {
@@ -109,58 +57,13 @@ export default function ExpenseList() {
                 throw new Error("Failed to fetch expenses");
             }
 
-            const data: Expense[] = await response.json();
-
-            if (controller.signal.aborted) {
-                return;
-            }
-
-            dispatch({
-                type: "FETCH_SUCCESS",
-                data,
-            });
-        } catch (error) {
-            if (controller.signal.aborted) {
-                return;
-            }
-
-            dispatch({
-                type: "FETCH_ERROR",
-                error:
-                    error instanceof Error
-                        ? error.message
-                        : "Something went wrong",
-            });
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchExpenses();
-    }, [fetchExpenses]);
-
-    useEffect(() => {
-        function handleVisibilityChange() {
-            if (document.visibilityState === "visible") {
-                fetchExpenses();
-            }
-        }
-
-        document.addEventListener(
-            "visibilitychange",
-            handleVisibilityChange
-        );
-
-        return () => {
-            document.removeEventListener(
-                "visibilitychange",
-                handleVisibilityChange
-            );
-        };
-    }, [fetchExpenses]);
+            return (await response.json()) as Expense[];
+        },
+    });
 
     useEffect(() => {
         function handleExpensesChanged() {
-            fetchExpenses();
+            refetch();
         }
 
         window.addEventListener(
@@ -174,23 +77,7 @@ export default function ExpenseList() {
                 handleExpensesChanged
             );
         };
-    }, [fetchExpenses]);
-
-    useEffect(() => {
-        return () => {
-            abortControllerRef.current?.abort();
-        };
-    }, []);
-
-    const isLoading =
-        state.status === "pending" &&
-        state.fetchStatus === "fetching";
-
-    const isFetching = state.fetchStatus === "fetching";
-
-    const isError = state.status === "error";
-
-    const isSuccess = state.status === "success";
+    }, [refetch]);
 
     return (
         <Card className="h-full">
@@ -206,19 +93,18 @@ export default function ExpenseList() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {state.data !== null &&
-                        state.data.length > 0 && (
-                            <Badge variant="secondary">
-                                {state.data.length}{" "}
-                                {state.data.length === 1
-                                    ? "expense"
-                                    : "expenses"}
-                            </Badge>
-                        )}
+                    {data !== undefined && data.length > 0 && (
+                        <Badge variant="secondary">
+                            {data.length}{" "}
+                            {data.length === 1
+                                ? "expense"
+                                : "expenses"}
+                        </Badge>
+                    )}
 
                     <Button
                         type="button"
-                        onClick={fetchExpenses}
+                        onClick={() => refetch()}
                         variant="outline"
                         size="sm"
                     >
@@ -253,28 +139,28 @@ export default function ExpenseList() {
                             )
                         )}
                     </div>
-                ) : isError && state.data === null ? (
+                ) : isError && data === undefined ? (
                     <div className="flex min-h-[260px] flex-col items-center justify-center rounded-xl bg-muted/40 px-6 text-center">
                         <p className="font-medium">
                             Failed to load expenses
                         </p>
 
                         <p className="mt-1 max-w-xs text-sm text-muted-foreground">
-                            {state.error}
+                            {error?.message}
                         </p>
 
                         <Button
                             type="button"
-                            onClick={fetchExpenses}
+                            onClick={() => refetch()}
                             variant="outline"
                             className="mt-4"
                         >
                             Retry
                         </Button>
                     </div>
-                ) : state.data !== null &&
+                ) : data !== undefined &&
                 isSuccess &&
-                state.data.length === 0 ? (
+                data.length === 0 ? (
                     <div className="flex min-h-[260px] flex-col items-center justify-center rounded-xl bg-muted/40 px-6 text-center">
                         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-background shadow-sm">
                             ₹
@@ -289,7 +175,7 @@ export default function ExpenseList() {
                             tracking your spending.
                         </p>
                     </div>
-                ) : state.data !== null ? (
+                ) : data !== undefined ? (
                     <>
                         {isError && (
                             <div className="mb-4 flex items-center justify-between rounded-md border px-3 py-2">
@@ -299,7 +185,7 @@ export default function ExpenseList() {
 
                                 <Button
                                     type="button"
-                                    onClick={fetchExpenses}
+                                    onClick={() => refetch()}
                                     variant="ghost"
                                     size="sm"
                                 >
@@ -322,69 +208,65 @@ export default function ExpenseList() {
 
                             <div
                                 className={
-                                    state.data.length > 5
+                                    data.length > 5
                                         ? "expense-list-scroll max-h-[360px] overflow-y-auto pr-2"
                                         : ""
                                 }
                             >
-                                {state.data.map(
-                                    (expense, index) => (
-                                        <div key={expense.id}>
-                                            <div className="group grid items-center gap-4 px-3 py-4 transition-colors hover:bg-muted/40 sm:grid-cols-[1fr_120px_100px_40px]">
-                                                <div className="flex min-w-0 items-center gap-3">
-                                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-sm">
-                                                        {(() => {
-                                                            const Icon =
-                                                                categoryIcons[
-                                                                    expense
-                                                                        .category as keyof typeof categoryIcons
-                                                                    ] ??
-                                                                MoreHorizontal;
+                                {data.map((expense, index) => (
+                                    <div key={expense.id}>
+                                        <div className="group grid items-center gap-4 px-3 py-4 transition-colors hover:bg-muted/40 sm:grid-cols-[1fr_120px_100px_40px]">
+                                            <div className="flex min-w-0 items-center gap-3">
+                                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted text-sm">
+                                                    {(() => {
+                                                        const Icon =
+                                                            categoryIcons[
+                                                                expense
+                                                                    .category as keyof typeof categoryIcons
+                                                                ] ??
+                                                            MoreHorizontal;
 
-                                                            return (
-                                                                <Icon className="h-5 w-5" />
-                                                            );
-                                                        })()}
-                                                    </div>
-
-                                                    <div className="min-w-0">
-                                                        <p className="truncate text-sm font-medium">
-                                                            {expense.description}
-                                                        </p>
-
-                                                        <p className="mt-0.5 text-xs text-muted-foreground">
-                                                            {expense.category}
-                                                        </p>
-                                                    </div>
+                                                        return (
+                                                            <Icon className="h-5 w-5" />
+                                                        );
+                                                    })()}
                                                 </div>
 
-                                                <p className="hidden text-sm text-muted-foreground sm:block">
-                                                    {expense.date}
-                                                </p>
+                                                <div className="min-w-0">
+                                                    <p className="truncate text-sm font-medium">
+                                                        {expense.description}
+                                                    </p>
 
-                                                <p className="text-sm font-semibold sm:text-right">
-                                                    ₹
-                                                    {expense.amount.toLocaleString(
-                                                        "en-IN"
-                                                    )}
-                                                </p>
-
-                                                <DeleteExpenseButton
-                                                    expenseId={
-                                                        expense.id
-                                                    }
-                                                    description={
-                                                        expense.description
-                                                    }
-                                                />
+                                                    <p className="mt-0.5 text-xs text-muted-foreground">
+                                                        {expense.category}
+                                                    </p>
+                                                </div>
                                             </div>
 
-                                            {index < (state.data?.length ?? 0) - 1 && (
-                                                    <Separator />
+                                            <p className="hidden text-sm text-muted-foreground sm:block">
+                                                {expense.date}
+                                            </p>
+
+                                            <p className="text-sm font-semibold sm:text-right">
+                                                ₹
+                                                {expense.amount.toLocaleString(
+                                                    "en-IN"
                                                 )}
+                                            </p>
+
+                                            <DeleteExpenseButton
+                                                expenseId={expense.id}
+                                                description={
+                                                    expense.description
+                                                }
+                                            />
                                         </div>
-                                    )
-                                )}
+
+                                        {index < data.length - 1 && (
+                                            <Separator />
+                                        )}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </>
