@@ -72,6 +72,7 @@ export default function CreateExpenseForm({
             }
 
             toast.success("Expense added successfully.");
+            window.dispatchEvent(new Event("expenses:changed"));
             router.refresh();
 
             setAmount("");
