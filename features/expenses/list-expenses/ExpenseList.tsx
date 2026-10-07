@@ -20,7 +20,7 @@ import DeleteExpenseButton from "@/features/expenses/delete-expense/DeleteExpens
 import { Button } from "@/shared/ui/button";
 import { useEffect } from "react";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient} from "@tanstack/react-query";
 import { expensesQueryOptions } from "./queries";
 
 const categoryIcons = {
@@ -32,6 +32,7 @@ const categoryIcons = {
 };
 
 export default function ExpenseList() {
+    const queryClient = useQueryClient();
     const {
         data,
         error,
@@ -44,7 +45,9 @@ export default function ExpenseList() {
 
     useEffect(() => {
         function handleExpensesChanged() {
-            refetch();
+            queryClient.invalidateQueries({
+                queryKey: expensesQueryOptions.queryKey,
+            });
         }
 
         window.addEventListener(
@@ -58,7 +61,7 @@ export default function ExpenseList() {
                 handleExpensesChanged
             );
         };
-    }, [refetch]);
+    }, [queryClient]);
 
     return (
         <Card className="h-full">
