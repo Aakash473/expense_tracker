@@ -16,12 +16,12 @@ import {
 } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
-import type { Expense } from "./types";
 import DeleteExpenseButton from "@/features/expenses/delete-expense/DeleteExpenseButton";
 import { Button } from "@/shared/ui/button";
 import { useEffect } from "react";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
+import { expensesQueryOptions } from "./queries";
 
 const categoryIcons = {
     Food: Utensils,
@@ -40,26 +40,7 @@ export default function ExpenseList() {
         isError,
         isSuccess,
         refetch,
-    } = useQuery({
-        queryKey: ["expenses"],
-        queryFn: async ({ signal }) => {
-            const response = await fetch("/api/expenses", {
-                signal,
-            });
-
-            if (response.redirected) {
-                throw new Error(
-                    "Your session has expired. Please log in again."
-                );
-            }
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch expenses");
-            }
-
-            return (await response.json()) as Expense[];
-        },
-    });
+    } = useQuery(expensesQueryOptions);
 
     useEffect(() => {
         function handleExpensesChanged() {
