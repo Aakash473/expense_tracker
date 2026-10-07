@@ -2,14 +2,12 @@ import { redirect } from "next/navigation";
 
 import DashboardHeader from "@/shared/layout/DashboardHeader";
 
-import CreateExpenseDialog from "@/features/expenses/create-expense/CreateExpenseDialog";
 import ExpenseList from "@/features/expenses/list-expenses/ExpenseList";
 import { getExpenseSummary } from "@/features/expenses/list-expenses/query";
 
 import SpendingSummary from "@/features/expenses/spending-summary/SpendingSummary";
 import CategorySpending from "@/features/expenses/spending-summary/CategorySpending";
 
-import { getCategories } from "@/features/categories/list-categories/query";
 import { requireUser } from "@/shared/auth/requireUser";
 import { UnauthorizedError } from "@/shared/auth/UnauthorizedError";
 
@@ -28,18 +26,11 @@ export default async function DashboardPage() {
         throw error;
     }
 
-    const [expenseSummary, categories] = await Promise.all([
-        getExpenseSummary(user.id),
-        getCategories(),
-    ]);
+    const expenseSummary = await getExpenseSummary(user.id);
 
     return (
         <main className="min-h-screen bg-background text-foreground">
-            <DashboardHeader
-                actions={
-                    <CreateExpenseDialog categories={categories} />
-                }
-            />
+            <DashboardHeader/>
 
             <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-12 gap-6">

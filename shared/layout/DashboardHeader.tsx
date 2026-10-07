@@ -3,14 +3,11 @@ import { Wallet } from "lucide-react";
 
 import LogoutButton from "@/features/auth/logout/LogoutButton";
 import ThemeToggle from "@/shared/theme/ThemeToggle";
+import CreateExpenseDialog from "@/features/expenses/create-expense/CreateExpenseDialog";
+import { getCategories } from "@/features/categories/list-categories/query";
 
-type DashboardHeaderProps = {
-    actions?: React.ReactNode;
-};
-
-export default function DashboardHeader({
-                                            actions,
-                                        }: DashboardHeaderProps) {
+export default async function DashboardHeader() {
+    const categories = await getCategories();
     return (
         <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -34,8 +31,7 @@ export default function DashboardHeader({
                     </div>
 
                     <div className="flex shrink-0 items-center gap-2">
-                        {actions}
-
+                        <CreateExpenseDialog categories={categories} />
                         <ThemeToggle />
                         <LogoutButton />
                     </div>
