@@ -6,6 +6,7 @@ import "./globals.css";
 import ThemeProvider from "@/shared/theme/ThemeProvider";
 import { cn } from "@/shared/utils";
 import { Toaster } from "@/shared/ui/sonner";
+import QueryProvider from "@/shared/query/QueryProvider";
 
 const jetbrainsMonoHeading = JetBrains_Mono({
   subsets: ["latin"],
@@ -43,7 +44,9 @@ export default function RootLayout({
       >
       <body className="min-h-full flex flex-col antialiased">
       <ThemeProvider>
-        {children}
+          <QueryProvider>
+              {children}
+          </QueryProvider>
           <Toaster />
       </ThemeProvider>
       </body>
