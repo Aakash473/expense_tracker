@@ -1,5 +1,4 @@
 import { Badge } from "@/shared/ui/badge";
-import { Wallet } from "lucide-react";
 
 import LogoutButton from "@/features/auth/logout/LogoutButton";
 import ThemeToggle from "@/shared/theme/ThemeToggle";
