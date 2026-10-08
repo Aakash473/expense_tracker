@@ -5,6 +5,7 @@ import LogoutButton from "@/features/auth/logout/LogoutButton";
 import ThemeToggle from "@/shared/theme/ThemeToggle";
 import CreateExpenseDialog from "@/features/expenses/create-expense/CreateExpenseDialog";
 import { getCategories } from "@/features/categories/list-categories/query";
+import { SidebarTrigger } from "@/shared/ui/sidebar";
 
 export default async function DashboardHeader() {
     const categories = await getCategories();
@@ -12,8 +13,8 @@ export default async function DashboardHeader() {
         <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex min-h-14 items-center justify-between gap-2">
-                    <div className="flex min-w-0 items-center gap-2">
-                        <Wallet className="h-5 w-5 shrink-0" />
+                    <div className="flex min-w-0 items-center gap-3">
+                        <SidebarTrigger />
 
                         <div className="flex min-w-0 items-center gap-2">
                             <h1 className="truncate font-mono text-xl font-semibold tracking-tight sm:text-3xl">

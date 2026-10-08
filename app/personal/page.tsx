@@ -11,6 +11,13 @@ import CategorySpending from "@/features/expenses/spending-summary/CategorySpend
 import { requireUser } from "@/shared/auth/requireUser";
 import { UnauthorizedError } from "@/shared/auth/UnauthorizedError";
 
+import DashboardSidebar from "@/shared/layout/DashboardSidebar";
+
+import {
+    SidebarInset,
+    SidebarProvider,
+} from "@/shared/ui/sidebar";
+
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
@@ -29,11 +36,16 @@ export default async function DashboardPage() {
     const expenseSummary = await getExpenseSummary(user.id);
 
     return (
-        <main className="min-h-screen bg-background text-foreground">
+
+        <SidebarProvider>
+            <DashboardSidebar />
+
+            <SidebarInset className="min-w-0">
+        <main className="min-h-screen min-w-0 bg-background text-foreground">
             <DashboardHeader/>
 
             <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-12 gap-6">
+                <div className="grid min-w-0 grid-cols-12 gap-6">
                     {/* Total Spending */}
                     <div className="col-span-12 lg:col-span-4">
                         <SpendingSummary
@@ -55,5 +67,7 @@ export default async function DashboardPage() {
                 </div>
             </div>
         </main>
+            </SidebarInset>
+        </SidebarProvider>
     );
 }
