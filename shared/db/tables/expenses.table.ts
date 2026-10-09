@@ -40,6 +40,12 @@ export const expenses = pgTable(
             .notNull()
             .defaultNow(),
 
+        spentAt: timestamp("spent_at", {
+            withTimezone: true,
+        })
+            .notNull()
+            .defaultNow(),
+
         updatedAt: timestamp("updated_at", {
             withTimezone: true,
         })
@@ -53,6 +59,7 @@ export const expenses = pgTable(
 
         index("expenses_user_spent_at_idx").on(
             table.userId,
+            table.spentAt,
         ),
     ],
 );

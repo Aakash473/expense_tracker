@@ -223,9 +223,14 @@ export default function ExpenseList() {
                                                 </div>
                                             </div>
 
-                                            <p className="hidden text-sm text-muted-foreground sm:block">
-                                                {expense.date}
-                                            </p>
+                                            <div className="hidden sm:block">
+                                                <p className="text-sm text-muted-foreground">
+                                                    {expense.date}
+                                                </p>
+                                                <p className="mt-1 text-xs text-muted-foreground">
+                                                    {expense.time}
+                                                </p>
+                                            </div>
 
                                             <p className="text-sm font-semibold sm:text-right">
                                                 ₹
