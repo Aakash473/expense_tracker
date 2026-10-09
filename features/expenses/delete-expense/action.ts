@@ -30,7 +30,7 @@ export async function deleteExpense(
             return fail("Expense not found");
         }
 
-        revalidatePath("/dashboard");
+        revalidatePath("/personal");
 
         return ok(deleted[0]);
     } catch (error) {

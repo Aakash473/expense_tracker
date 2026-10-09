@@ -39,7 +39,7 @@ export async function createExpense(
             description,
         });
 
-        revalidatePath("/dashboard");
+        revalidatePath("/personal");
 
         return ok(expense);
     } catch (error) {

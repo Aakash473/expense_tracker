@@ -23,7 +23,7 @@ export default function DashboardSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton
-                            href="/dashboard"
+                            href="/personal"
                             size="lg"
                             tooltip="Expense Tracker"
                         >

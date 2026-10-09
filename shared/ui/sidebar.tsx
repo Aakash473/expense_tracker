@@ -10,7 +10,7 @@ import {
   type LinkProps,
 } from "react-aria-components"
 
-import { useIsMobile } from "@/hooks/use-mobile"
+import { useIsMobile } from "@/shared/hooks/use-mobile"
 import { Button } from "@/shared/ui/button"
 import { Input } from "@/shared/ui/input"
 import { Separator } from "@/shared/ui/separator"
