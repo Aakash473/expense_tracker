@@ -67,10 +67,6 @@ export default function ExpenseList() {
         <Card className="h-full">
             <CardHeader className="flex flex-row items-start justify-between space-y-0">
                 <div>
-                    <p className="text-sm text-muted-foreground">
-                        Activity
-                    </p>
-
                     <CardTitle className="mt-1">
                         Recent Expenses
                     </CardTitle>
