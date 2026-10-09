@@ -4,25 +4,17 @@
 import * as React from "react"
 
 const MOBILE_BREAKPOINT = 768
+const query = `(max-width: ${MOBILE_BREAKPOINT - 1}px)`
 
 export function useIsMobile() {
-    const [isMobile, setIsMobile] = React.useState<boolean | undefined>(
-        undefined
+    return React.useSyncExternalStore(
+        (callback) => {
+            const mql = window.matchMedia(query)
+            mql.addEventListener("change", callback)
+
+            return () => mql.removeEventListener("change", callback)
+        },
+        () => window.matchMedia(query).matches,
+        () => false,
     )
-
-    React.useEffect(() => {
-        const mql = window.matchMedia(
-            `(max-width: ${MOBILE_BREAKPOINT - 1}px)`
-        )
-
-        const onChange = (event: MediaQueryListEvent) => {
-            setIsMobile(event.matches)
-        }
-
-        mql.addEventListener("change", onChange)
-
-        return () => mql.removeEventListener("change", onChange)
-    }, [])
-
-    return !!isMobile
 }
