@@ -20,26 +20,20 @@ export async function getExpenses(userId: string) {
             eq(expenses.categoryId, categories.id)
         )
         .where(eq(expenses.userId, userId))
-        .orderBy(desc(expenses.createdAt));
+        .orderBy(desc(expenses.spentAt))
 }
 
 export async function getExpenseSummary(userId: string) {
     const rows = await getExpenses(userId);
 
     const expenses: Expense[] = rows.map((expense) => {
-        const spentAt = expense.spentAt;
 
         return {
             id: expense.id,
             category: expense.category,
             description: expense.description ?? "",
             amount: Number(expense.amount),
-            date: spentAt.toLocaleDateString("en-CA"),
-            time: spentAt.toLocaleTimeString("en-IN", {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: true,
-            }),
+            spentAt: expense.spentAt.toISOString()
         };
     });
 

@@ -14,7 +14,9 @@ import { type } from "arktype";
 
 export async function createExpense(
     input: CreateExpenseInput
-): Promise<ActionResult<Awaited<ReturnType<typeof insertExpense>>>> {
+): Promise<
+    ActionResult<Awaited<ReturnType<typeof insertExpense>>>
+> {
     const validation = createExpenseSchema(input);
 
     if (validation instanceof type.errors) {
@@ -24,37 +26,20 @@ export async function createExpense(
     try {
         const user = await requireUser();
 
-        const { categoryId, amount, description, spentDate, spentTime } =
-            validation;
+        const { categoryId, amount, description, spentAt } = validation;
 
-        const [year, month, day] = spentDate.split("-").map(Number);
-        const [hours, minutes] = spentTime.split(":").map(Number);
+        // Parse the ISO timestamp supplied by the browser.
+        const spentAtDate = new Date(spentAt);
 
-        // Interpret the selected date and time in the server's local timezone.
-        const spentAt = new Date(year, month - 1, day, hours, minutes);
-
-        if (
-            spentAt.getFullYear() !== year ||
-            spentAt.getMonth() !== month - 1 ||
-            spentAt.getDate() !== day ||
-            spentAt.getHours() !== hours ||
-            spentAt.getMinutes() !== minutes
-        ) {
+        if (!Number.isFinite(spentAtDate.getTime())) {
             return fail("Enter a valid expense date and time");
         }
 
-        if (spentAt.getTime() > Date.now()) {
-            return fail("Expense date and time cannot be in the future");
-        }
-
-        const today = new Date();
-        const isToday =
-            today.getFullYear() === year &&
-            today.getMonth() === month - 1 &&
-            today.getDate() === day;
-
-        if (!isToday && !input.spentTime) {
-            return fail("Choose a time for dates other than today");
+        // Validate on the server; client-side checks alone are not sufficient.
+        if (spentAtDate.getTime() > Date.now()) {
+            return fail(
+                "Expense date and time cannot be in the future"
+            );
         }
 
         const exists = await categoryExists(categoryId);
@@ -68,7 +53,7 @@ export async function createExpense(
             categoryId,
             amount: amount.toString(),
             description,
-            spentAt,
+            spentAt: spentAtDate,
         });
 
         revalidatePath("/personal");

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -85,7 +86,6 @@ export default function CreateExpenseForm({
 
     const [date, setDate] = useState(initialDateTime.date);
     const [time, setTime] = useState(initialDateTime.time);
-    const [timeTouched, setTimeTouched] = useState(false);
 
     const [dateError, setDateError] = useState("");
     const [timeError, setTimeError] = useState("");
@@ -113,9 +113,9 @@ export default function CreateExpenseForm({
         setTime(
             `${String(hour24).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
         );
-        setTimeTouched(true);
         setTimeError("");
     }
+
     async function handleSubmit(
         event: React.FormEvent<HTMLFormElement>
     ) {
@@ -124,28 +124,65 @@ export default function CreateExpenseForm({
         setDateError("");
         setTimeError("");
 
-        if (!date) {
-            setDateError("Choose an expense date.");
+        // Validate the date before parsing it.
+        if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+            setDateError("Choose a valid expense date.");
             return;
         }
 
+        // Validate the time before parsing it.
+        if (!time || !/^\d{2}:\d{2}$/.test(time)) {
+            setTimeError("Choose a valid expense time.");
+            return;
+        }
+
+        const [year, month, day] = date.split("-").map(Number);
+        const [hours, minutes] = time.split(":").map(Number);
+
+        if (
+            month < 1 ||
+            month > 12 ||
+            day < 1 ||
+            day > 31 ||
+            hours < 0 ||
+            hours > 23 ||
+            minutes < 0 ||
+            minutes > 59
+        ) {
+            setDateError("Enter a valid expense date and time.");
+            return;
+        }
+
+        // Interpret the selected date/time in the browser's local timezone.
+        const selectedDate = new Date(
+            year,
+            month - 1,
+            day,
+            hours,
+            minutes
+        );
+
+        // Detect invalid dates that JavaScript automatically normalizes.
+        if (
+            selectedDate.getFullYear() !== year ||
+            selectedDate.getMonth() !== month - 1 ||
+            selectedDate.getDate() !== day ||
+            selectedDate.getHours() !== hours ||
+            selectedDate.getMinutes() !== minutes
+        ) {
+            setDateError("Enter a valid expense date and time.");
+            return;
+        }
+
+        // Reject future dates.
         if (date > today) {
             setDateError("Expense date cannot be in the future.");
             return;
         }
 
-        if (!time) {
-            setTimeError("Choose an expense time.");
-            return;
-        }
-
-        if (!isToday && !timeTouched) {
-            setTimeError("Choose a time for dates other than today.");
-            return;
-        }
-
-        if (isToday && time > getLocalDateTime().time) {
-            setTimeError("Expense time cannot be in the future.");
+        // Reject any future date/time, including later today.
+        if (selectedDate.getTime() > Date.now()) {
+            setTimeError("Expense date and time cannot be in the future.");
             return;
         }
 
@@ -153,8 +190,8 @@ export default function CreateExpenseForm({
             categoryId: category,
             amount: Number(amount),
             description: description.trim(),
-            spentDate: date,
-            spentTime: time,
+            // Send the exact instant, not local date/time parts.
+            spentAt: selectedDate.toISOString(),
         });
 
         if (validation instanceof type.errors) {
@@ -168,16 +205,7 @@ export default function CreateExpenseForm({
             const result = await createExpense(validation);
 
             if (!result.ok) {
-                const message = result.error;
-
-                if (message.toLowerCase().includes("time")) {
-                    setTimeError(message);
-                } else if (message.toLowerCase().includes("date")) {
-                    setDateError(message);
-                } else {
-                    toast.error(message);
-                }
-
+                toast.error(result.error);
                 return;
             }
 
@@ -191,10 +219,8 @@ export default function CreateExpenseForm({
             setDescription("");
 
             const current = getLocalDateTime();
-
             setDate(current.date);
             setTime(current.time);
-            setTimeTouched(false);
 
             onSuccess?.();
         } catch {
@@ -276,7 +302,8 @@ export default function CreateExpenseForm({
                         required
                     />
                 </div>
-                {/* Custom date picker */}
+
+                {/* Expense date */}
                 <div className="space-y-2">
                     <Label>Expense date</Label>
 
@@ -320,7 +347,8 @@ export default function CreateExpenseForm({
                         </p>
                     )}
                 </div>
-                {/* Custom time picker */}
+
+                {/* Expense time */}
                 <div className="space-y-2">
                     <Label>Expense time</Label>
 
