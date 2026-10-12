@@ -27,20 +27,7 @@ export async function createExpense(
         const user = await requireUser();
 
         const { categoryId, amount, description, spentAt } = validation;
-
-        // Parse the ISO timestamp supplied by the browser.
         const spentAtDate = new Date(spentAt);
-
-        if (!Number.isFinite(spentAtDate.getTime())) {
-            return fail("Enter a valid expense date and time");
-        }
-
-        // Validate on the server; client-side checks alone are not sufficient.
-        if (spentAtDate.getTime() > Date.now()) {
-            return fail(
-                "Expense date and time cannot be in the future"
-            );
-        }
 
         const exists = await categoryExists(categoryId);
 

@@ -15,6 +15,13 @@ import { parseDate as parseCalendarDate } from "@internationalized/date";
 
 import { createExpenseSchema } from "./schema";
 import { createExpense } from "./action";
+import {
+    getLocalDateTime,
+    formatDate,
+    formatTime,
+    to24Hour,
+    toSpentAt,
+} from "./utils";
 
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
@@ -42,37 +49,7 @@ type CreateExpenseFormProps = {
     onSuccess?: () => void;
 };
 
-function getLocalDateTime() {
-    const now = new Date();
-    const pad = (value: number) => String(value).padStart(2, "0");
 
-    return {
-        date: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
-        time: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
-    };
-}
-
-function formatDate(value: string) {
-    if (!value) return "Choose a date";
-
-    const [year, month, day] = value.split("-").map(Number);
-
-    return new Date(year, month - 1, day).toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-    });
-}
-
-function formatTime(value: string) {
-    if (!value) return "Select time";
-
-    const [hours, minutes] = value.split(":").map(Number);
-    const hour12 = hours % 12 || 12;
-    const period = hours >= 12 ? "PM" : "AM";
-
-    return `${hour12}:${String(minutes).padStart(2, "0")} ${period}`;
-}
 
 export default function CreateExpenseForm({
                                               categories,
@@ -87,7 +64,6 @@ export default function CreateExpenseForm({
     const [date, setDate] = useState(initialDateTime.date);
     const [time, setTime] = useState(initialDateTime.time);
 
-    const [dateError, setDateError] = useState("");
     const [timeError, setTimeError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -107,82 +83,20 @@ export default function CreateExpenseForm({
         minute: number,
         ampm: string
     ) {
-        const hour24 =
-            ampm === "PM" ? (hour % 12) + 12 : hour % 12;
-
-        setTime(
-            `${String(hour24).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
-        );
+        setTime(to24Hour(hour, minute, ampm));
         setTimeError("");
     }
+
 
     async function handleSubmit(
         event: React.FormEvent<HTMLFormElement>
     ) {
         event.preventDefault();
 
-        setDateError("");
         setTimeError("");
 
-        // Validate the date before parsing it.
-        if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-            setDateError("Choose a valid expense date.");
-            return;
-        }
-
-        // Validate the time before parsing it.
-        if (!time || !/^\d{2}:\d{2}$/.test(time)) {
-            setTimeError("Choose a valid expense time.");
-            return;
-        }
-
-        const [year, month, day] = date.split("-").map(Number);
-        const [hours, minutes] = time.split(":").map(Number);
-
-        if (
-            month < 1 ||
-            month > 12 ||
-            day < 1 ||
-            day > 31 ||
-            hours < 0 ||
-            hours > 23 ||
-            minutes < 0 ||
-            minutes > 59
-        ) {
-            setDateError("Enter a valid expense date and time.");
-            return;
-        }
-
-        // Interpret the selected date/time in the browser's local timezone.
-        const selectedDate = new Date(
-            year,
-            month - 1,
-            day,
-            hours,
-            minutes
-        );
-
-        // Detect invalid dates that JavaScript automatically normalizes.
-        if (
-            selectedDate.getFullYear() !== year ||
-            selectedDate.getMonth() !== month - 1 ||
-            selectedDate.getDate() !== day ||
-            selectedDate.getHours() !== hours ||
-            selectedDate.getMinutes() !== minutes
-        ) {
-            setDateError("Enter a valid expense date and time.");
-            return;
-        }
-
-        // Reject future dates.
-        if (date > today) {
-            setDateError("Expense date cannot be in the future.");
-            return;
-        }
-
-        // Reject any future date/time, including later today.
-        if (selectedDate.getTime() > Date.now()) {
-            setTimeError("Expense date and time cannot be in the future.");
+        if (!time) {
+            setTimeError("Choose a time");
             return;
         }
 
@@ -190,12 +104,18 @@ export default function CreateExpenseForm({
             categoryId: category,
             amount: Number(amount),
             description: description.trim(),
-            // Send the exact instant, not local date/time parts.
-            spentAt: selectedDate.toISOString(),
+            spentAt: toSpentAt(date, time),
         });
 
         if (validation instanceof type.errors) {
-            toast.error(validation[0].message);
+            const error = validation[0];
+
+            if (error.path[0] === "spentAt") {
+                setTimeError(error.message);
+            } else {
+                toast.error(error.message);
+            }
+
             return;
         }
 
@@ -231,6 +151,7 @@ export default function CreateExpenseForm({
             setIsSubmitting(false);
         }
     }
+
 
     return (
         <form onSubmit={handleSubmit}>
@@ -325,27 +246,30 @@ export default function CreateExpenseForm({
                             <Calendar
                                 value={parseCalendarDate(date)}
                                 maxValue={parseCalendarDate(today)}
+
                                 onChange={(selectedDate) => {
                                     if (!selectedDate) return;
 
                                     const pad = (value: number) =>
                                         String(value).padStart(2, "0");
 
-                                    setDate(
-                                        `${selectedDate.year}-${pad(selectedDate.month)}-${pad(selectedDate.day)}`
-                                    );
-                                    setDateError("");
+                                    const selectedDateString =
+                                        `${selectedDate.year}-${pad(selectedDate.month)}-${pad(selectedDate.day)}`;
+
+                                    setDate(selectedDateString);
                                     setTimeError("");
+
+                                    if (selectedDateString !== today) {
+                                        setTime("");
+                                    } else {
+                                        setTime(getLocalDateTime().time);
+                                    }
                                 }}
+
                             />
                         </Popover>
                     </PopoverTrigger>
 
-                    {dateError && (
-                        <p className="text-sm text-destructive">
-                            {dateError}
-                        </p>
-                    )}
                 </div>
 
                 {/* Expense time */}
