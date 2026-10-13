@@ -1,6 +1,6 @@
 {
-  "id": "936a224a-d715-4b92-b189-c27a2e3b2465",
-  "prevId": "79360466-04dd-4e23-9129-17e00153ca84",
+  "id": "e9f4bfde-a111-40c8-8e8c-47f0bac231f2",
+  "prevId": "936a224a-d715-4b92-b189-c27a2e3b2465",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -180,6 +180,91 @@
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.monthly_budgets": {
+      "name": "monthly_budgets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "month": {
+          "name": "month",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "monthly_budgets_user_id_users_id_fk": {
+          "name": "monthly_budgets_user_id_users_id_fk",
+          "tableFrom": "monthly_budgets",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "monthly_budgets_user_month_unique": {
+          "name": "monthly_budgets_user_month_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id",
+            "month"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "monthly_budgets_amount_positive": {
+          "name": "monthly_budgets_amount_positive",
+          "value": "\"monthly_budgets\".\"amount\" > 0"
+        },
+        "monthly_budgets_month_first_day": {
+          "name": "monthly_budgets_month_first_day",
+          "value": "extract(day from \"monthly_budgets\".\"month\") = 1"
+        }
+      },
       "isRLSEnabled": false
     }
   },
