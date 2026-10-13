@@ -29,6 +29,13 @@
       "when": 1790670000000,
       "tag": "0003_add_spent_at",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791876686890,
+      "tag": "0004_serious_hitman",
+      "breakpoints": true
     }
   ]
 }
