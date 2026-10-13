@@ -1,4 +1,7 @@
+
 import { type } from "arktype";
+
+const ISO_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 
 export const createExpenseSchema = type({
     amount: type("number > 0")
@@ -29,7 +32,27 @@ export const createExpenseSchema = type({
                 message: "Description must be 1–200 characters",
             })
         ),
+
+    spentAt: type("string").narrow((value, ctx) => {
+        const time = Date.parse(value);
+
+        if (
+            !ISO_REGEX.test(value) ||
+            !Number.isFinite(time) ||
+            new Date(time).toISOString() !== value
+        ) {
+            return ctx.reject({
+                message: "Enter a valid expense date and time",
+            });
+        }
+
+        return (
+            time <= Date.now() ||
+            ctx.reject({
+                message: "Expense date and time cannot be in the future",
+            })
+        );
+    }),
 });
 
-export type CreateExpenseInput =
-    typeof createExpenseSchema.inferIn;
+export type CreateExpenseInput = typeof createExpenseSchema.inferIn;

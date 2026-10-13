@@ -14,7 +14,9 @@ import { type } from "arktype";
 
 export async function createExpense(
     input: CreateExpenseInput
-): Promise<ActionResult<Awaited<ReturnType<typeof insertExpense>>>> {
+): Promise<
+    ActionResult<Awaited<ReturnType<typeof insertExpense>>>
+> {
     const validation = createExpenseSchema(input);
 
     if (validation instanceof type.errors) {
@@ -24,7 +26,8 @@ export async function createExpense(
     try {
         const user = await requireUser();
 
-        const { categoryId, amount, description } = validation;
+        const { categoryId, amount, description, spentAt } = validation;
+        const spentAtDate = new Date(spentAt);
 
         const exists = await categoryExists(categoryId);
 
@@ -37,6 +40,7 @@ export async function createExpense(
             categoryId,
             amount: amount.toString(),
             description,
+            spentAt: spentAtDate,
         });
 
         revalidatePath("/personal");

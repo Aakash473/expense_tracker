@@ -31,6 +31,23 @@ const categoryIcons = {
     Other: MoreHorizontal,
 };
 
+function formatSpentAt(value: string) {
+    const date = new Date(value);
+
+    return {
+        date: date.toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+        }),
+        time: date.toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+        }),
+    };
+}
+
 export default function ExpenseList() {
     const queryClient = useQueryClient();
     const {
@@ -193,7 +210,10 @@ export default function ExpenseList() {
                                         : ""
                                 }
                             >
-                                {data.map((expense, index) => (
+                                {data.map((expense, index) => {
+                                    const { date, time } = formatSpentAt(expense.spentAt);
+
+                                    return (
                                     <div key={expense.id}>
                                         <div className="group grid items-center gap-4 px-3 py-4 transition-colors hover:bg-muted/40 sm:grid-cols-[1fr_120px_100px_40px]">
                                             <div className="flex min-w-0 items-center gap-3">
@@ -223,9 +243,15 @@ export default function ExpenseList() {
                                                 </div>
                                             </div>
 
-                                            <p className="hidden text-sm text-muted-foreground sm:block">
-                                                {expense.date}
-                                            </p>
+                                            <div className="hidden sm:block">
+                                                <p className="text-sm text-muted-foreground">
+                                                    {date}
+                                                </p>
+                                                <p className="mt-1 text-xs text-muted-foreground">
+                                                    {time}
+                                                </p>
+                                            </div>
+
 
                                             <p className="text-sm font-semibold sm:text-right">
                                                 ₹
@@ -246,7 +272,8 @@ export default function ExpenseList() {
                                             <Separator />
                                         )}
                                     </div>
-                                ))}
+                               );
+                            })}
                             </div>
                         </div>
                     </>

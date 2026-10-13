@@ -8,6 +8,7 @@ type InsertExpenseInput = {
     categoryId: string;
     amount: string;
     description: string | null;
+    spentAt: Date;
 };
 
 export async function insertExpense(input: InsertExpenseInput) {

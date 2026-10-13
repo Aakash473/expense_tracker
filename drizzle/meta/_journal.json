@@ -22,6 +22,13 @@
       "when": 1790668143656,
       "tag": "0002_seed_categories",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790670000000,
+      "tag": "0003_add_spent_at",
+      "breakpoints": true
     }
   ]
 }
