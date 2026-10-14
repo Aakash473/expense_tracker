@@ -7,6 +7,7 @@ import MonthlyBudgetCard from "@/features/budgets/monthly-budget-status/MonthlyB
 import { getMonthlyBudgetStatus } from "@/features/budgets/monthly-budget-status/query";
 import CategorySpending from "@/features/expenses/spending-summary/CategorySpending";
 import SetBudgetDialog from "@/features/budgets/set-monthly-budget/SetBudgetDialog";
+import UseLastMonthBudgetButton from "@/features/budgets/set-monthly-budget/UseLastMonthBudgetButton";
 
 
 import { requireUser } from "@/shared/auth/requireUser";
@@ -40,7 +41,18 @@ export default async function DashboardPage() {
                     <MonthlyBudgetCard
                         budgetStatus={budgetStatus}
                         action={
-                            <SetBudgetDialog currentBudget={budgetStatus.budget} />
+                            <>
+                                {budgetStatus.status === "unset" &&
+                                    budgetStatus.previousBudget !== null && (
+                                        <UseLastMonthBudgetButton
+                                            amount={budgetStatus.previousBudget}
+                                        />
+                                    )}
+
+                                <SetBudgetDialog
+                                    currentBudget={budgetStatus.budget}
+                                />
+                            </>
                         }
                     />
                 </div>
