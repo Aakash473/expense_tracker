@@ -34,7 +34,7 @@ export default async function DashboardPage() {
     return (
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <div className="grid min-w-0 grid-cols-12 gap-6">
-                {/* Total Spending */}
+                {/* Monthly Budget */}
                 <div className="col-span-12 lg:col-span-4">
                     <MonthlyBudgetCard budgetStatus={budgetStatus} />
                 </div>
