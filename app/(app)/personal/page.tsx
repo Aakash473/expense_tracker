@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import ExpenseList from "@/features/expenses/list-expenses/ExpenseList";
 import { getExpenseSummary } from "@/features/expenses/list-expenses/query";
 
-import SpendingSummary from "@/features/expenses/spending-summary/SpendingSummary";
+import MonthlyBudgetCard from "@/features/budgets/monthly-budget-status/MonthlyBudgetCard";
+import { getMonthlyBudgetStatus } from "@/features/budgets/monthly-budget-status/query";
 import CategorySpending from "@/features/expenses/spending-summary/CategorySpending";
 
 
@@ -25,16 +26,17 @@ export default async function DashboardPage() {
         throw error;
     }
 
-    const expenseSummary = await getExpenseSummary(user.id);
+    const [expenseSummary, budgetStatus] = await Promise.all([
+        getExpenseSummary(user.id),
+        getMonthlyBudgetStatus(user.id, new Date()),
+    ]);
 
     return (
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <div className="grid min-w-0 grid-cols-12 gap-6">
                 {/* Total Spending */}
                 <div className="col-span-12 lg:col-span-4">
-                    <SpendingSummary
-                        totalSpending={expenseSummary.totalSpending}
-                    />
+                    <MonthlyBudgetCard budgetStatus={budgetStatus} />
                 </div>
 
                 {/* Recent Expenses */}
