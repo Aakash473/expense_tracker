@@ -6,6 +6,7 @@ import { getExpenseSummary } from "@/features/expenses/list-expenses/query";
 import SpendingSummary from "@/features/expenses/spending-summary/SpendingSummary";
 import CategorySpending from "@/features/expenses/spending-summary/CategorySpending";
 
+
 import { requireUser } from "@/shared/auth/requireUser";
 import { UnauthorizedError } from "@/shared/auth/UnauthorizedError";
 
