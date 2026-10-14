@@ -6,6 +6,7 @@ import { getExpenseSummary } from "@/features/expenses/list-expenses/query";
 import MonthlyBudgetCard from "@/features/budgets/monthly-budget-status/MonthlyBudgetCard";
 import { getMonthlyBudgetStatus } from "@/features/budgets/monthly-budget-status/query";
 import CategorySpending from "@/features/expenses/spending-summary/CategorySpending";
+import SetBudgetDialog from "@/features/budgets/set-monthly-budget/SetBudgetDialog";
 
 
 import { requireUser } from "@/shared/auth/requireUser";
@@ -36,7 +37,12 @@ export default async function DashboardPage() {
             <div className="grid min-w-0 grid-cols-12 gap-6">
                 {/* Monthly Budget */}
                 <div className="col-span-12 lg:col-span-4">
-                    <MonthlyBudgetCard budgetStatus={budgetStatus} />
+                    <MonthlyBudgetCard
+                        budgetStatus={budgetStatus}
+                        action={
+                            <SetBudgetDialog currentBudget={budgetStatus.budget} />
+                        }
+                    />
                 </div>
 
                 {/* Recent Expenses */}

@@ -6,10 +6,12 @@ import {
 } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Progress } from "@/shared/ui/progress";
+import type { ReactNode } from "react";
 import type { BudgetStatus, MonthlyBudgetStatus } from "./status";
 
 type MonthlyBudgetCardProps = {
     budgetStatus: MonthlyBudgetStatus;
+    action?: ReactNode;
 };
 
 const statusLabels: Record<BudgetStatus, string> = {
@@ -22,7 +24,7 @@ const statusLabels: Record<BudgetStatus, string> = {
 const money = (amount: number) => `₹${amount.toLocaleString("en-IN")}`;
 
 export default function MonthlyBudgetCard({
-                                              budgetStatus,
+                                              budgetStatus,action,
                                           }: MonthlyBudgetCardProps) {
     const monthTitle = new Intl.DateTimeFormat("en-IN", {
         month: "long",
@@ -43,7 +45,11 @@ export default function MonthlyBudgetCard({
         <Card className="h-full">
             <CardHeader className="flex flex-row items-start justify-between space-y-0">
                 <CardTitle>{monthTitle}</CardTitle>
-                <Badge>{statusLabels[status]}</Badge>
+
+                <div className="flex items-center gap-2">
+                    <Badge>{statusLabels[status]}</Badge>
+                    {action}
+                </div>
             </CardHeader>
 
             <CardContent>
