@@ -1,6 +1,11 @@
-
-"use client";
-
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/shared/ui/card";
+import { Badge } from "@/shared/ui/badge";
+import { Progress } from "@/shared/ui/progress";
 import type { BudgetStatus, MonthlyBudgetStatus } from "./status";
 
 type MonthlyBudgetCardProps = {
@@ -35,51 +40,37 @@ export default function MonthlyBudgetCard({
     }[status];
 
     return (
-        <div className="rounded-xl border p-5">
-            <div className="mb-4 flex items-center justify-between gap-3">
-                <h2 className="text-lg font-semibold">{monthTitle}</h2>
-                <span className="rounded-full border px-3 py-1 text-sm">
-                    {statusLabels[status]}
-                </span>
-            </div>
+        <Card className="h-full">
+            <CardHeader className="flex flex-row items-start justify-between space-y-0">
+                <CardTitle>{monthTitle}</CardTitle>
+                <Badge>{statusLabels[status]}</Badge>
+            </CardHeader>
 
-            <p className="text-2xl font-bold">
-                {status === "unset" && `${money(spent)} spent`}
-                {status === "ok" && `${money(remaining!)} left`}
-                {status === "warning" && `${money(remaining!)} left`}
-                {status === "over" && `${money(Math.abs(remaining!))} over budget`}
-            </p>
-
-            {status === "unset" ? (
-                <p className="mt-3 text-sm text-muted-foreground">
-                    Set a monthly budget to track what&apos;s left.
+            <CardContent>
+                <p className="text-2xl font-bold">
+                    {status === "unset" && `${money(spent)} spent`}
+                    {(status === "ok" || status === "warning") &&
+                        `${money(remaining!)} left`}
+                    {status === "over" &&
+                        `${money(Math.abs(remaining!))} over budget`}
                 </p>
-            ) : (
-                <>
-                    <div className="mt-4">
-                        <div
-                            className={`h-2 overflow-hidden rounded-full bg-muted ${progressClass}`}
-                        >
-                            <div
-                                className={`h-full rounded-full ${
-                                    status === "warning"
-                                        ? "bg-amber-500"
-                                        : status === "over"
-                                            ? "bg-destructive"
-                                            : "bg-primary"
-                                }`}
-                                style={{
-                                    width: `${Math.min(percent!, 100)}%`,
-                                }}
-                            />
-                        </div>
-                    </div>
 
+                {status === "unset" ? (
                     <p className="mt-3 text-sm text-muted-foreground">
-                        {money(spent)} of {money(budget!)} · {percent}%
+                        Set a monthly budget to track what&apos;s left.
                     </p>
-                </>
-            )}
-        </div>
+                ) : (
+                    <>
+                        <Progress
+                            value={Math.min(percent!, 100)}
+                            className={`mt-4 ${progressClass}`}
+                        />
+                        <p className="mt-3 text-sm text-muted-foreground">
+                            {money(spent)} of {money(budget!)} · {percent}%
+                        </p>
+                    </>
+                )}
+            </CardContent>
+        </Card>
     );
 }
