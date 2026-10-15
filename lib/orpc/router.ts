@@ -1,4 +1,6 @@
-import { hello } from "@/features/orpc-hello/hello";
+import { listExpenses } from "@/features/expenses/list-expenses/procedure";
 export const router = {
-    hello,
+    expenses : {
+        list : listExpenses,
+    },
 };

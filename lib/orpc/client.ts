@@ -12,5 +12,5 @@ const link = new RPCLink({
             : `${window.location.origin}/rpc`,
 });
 
-export const orpc: RouterClient<typeof router> =
+export const client: RouterClient<typeof router> =
     createORPCClient(link);
