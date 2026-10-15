@@ -172,6 +172,12 @@ importers:
       '@internationalized/date':
         specifier: ^3.12.4
         version: 3.12.4
+      '@orpc/client':
+        specifier: 2.0.0-beta.43
+        version: 2.0.0-beta.43
+      '@orpc/server':
+        specifier: 2.0.0-beta.43
+        version: 2.0.0-beta.43
       '@supabase/ssr':
         specifier: ^0.12.7
         version: 0.12.7(@supabase/supabase-js@2.117.2)
@@ -1288,6 +1294,26 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
+  '@orpc/client@2.0.0-beta.43':
+    resolution: {integrity: sha512-176u4pmmoXGyjHRTuJFSQVN4Ucuau5mfn3LkxBs+kyTcNHOZD9XmDW8DAr0NJwhfUBDT/E62q1y9aEgiKUcJsA==}
+
+  '@orpc/contract@2.0.0-beta.43':
+    resolution: {integrity: sha512-8IyzPrpdvGhi51G6QHEkoPOvs4AyV0YjhV6OP57W9rUAS9YnPyc/ScKwpsTZsm6dOjPcNBk8R2n+iN2s7m4t4w==}
+
+  '@orpc/server@2.0.0-beta.43':
+    resolution: {integrity: sha512-4G6xYiPQtu5iefsnEZzxa9rcl+P0IJCPkzQu+Mv45QJd/S3Qp6MQwDJAV90WBAjQay6dd0662awGrh4JXfIXhQ==}
+    peerDependencies:
+      crossws: '>=0.3.4'
+      fastify: '>=5.6.1'
+    peerDependenciesMeta:
+      crossws:
+        optional: true
+      fastify:
+        optional: true
+
+  '@orpc/shared@2.0.0-beta.43':
+    resolution: {integrity: sha512-2DP1wex6Aja6dcmudQAiMdZlXcuJXN7/k0dtFAj2Sy0TwQ6Jcr+t7aJk5lmZrosPpEAQTbY/f9kJJW+Cxr35Cw==}
+
   '@react-types/shared@3.36.1':
     resolution: {integrity: sha512-AzsuD9OfxTOZMMvTRhlN3oHBwOmFN7tDh27LzqmHt4+uOgPhJT7ZM7/kVs/8/o0WxayMUIk3hBmCFRHv1FUoag==}
     peerDependencies:
@@ -1367,6 +1393,35 @@ packages:
     resolution: {integrity: sha512-ISSB5QX1qP2ynrheIpYwc4oKR5Ny4siNuUyf1qZniy+Il+p/PtDB0QK1Dnle8noiHpwRD3gpPdubOC3qI/Zamg==}
     peerDependencies:
       solid-js: ^1.6.12
+
+  '@standard-schema/spec@1.1.0':
+    resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
+  '@standard-server/aws-lambda@0.10.3':
+    resolution: {integrity: sha512-OOoYsr1DVMGPZ0e5xpyyHgjM/7jCRgQJnSvGEYxRt7fIWo9LcKWFqaRmMFDDgjFUQtKhnWwR3Jzw2yWzEhOeaQ==}
+
+  '@standard-server/core@0.10.3':
+    resolution: {integrity: sha512-0ZnZg6F+VxqH6jsicQwKrLCKWOblrlLJPRkga7HRadQd+Dx6nLXd2ujcRIceLvSD2Yc/QzX2VGAT/vyc2CG72A==}
+
+  '@standard-server/fastify@0.10.3':
+    resolution: {integrity: sha512-O293Jlv+bXGDl/KZ7vEOOmesyk2jQNbtbIuJxlEY/VRU4ilV7OHYa3l7U3cpvnAcanAUVCy2wUYBb+OCwmEjcw==}
+    peerDependencies:
+      fastify: '>=5.6.1'
+    peerDependenciesMeta:
+      fastify:
+        optional: true
+
+  '@standard-server/fetch@0.10.3':
+    resolution: {integrity: sha512-cdRUrxfYjUv7F3rLeq+1y+d1tBNEI7YgMgyAS715p1mCZAKvueA2dDmM/DPQwM7BsjndfX1teDyc5GKmlj4tyw==}
+
+  '@standard-server/node@0.10.3':
+    resolution: {integrity: sha512-5AGTXbTcJ/zbFw3BMhfECASXqLALcehSLPusYgDwzpJRn/9Ow03ndQesO32COONW36DqGp44kL6sy9IPYAQZRg==}
+
+  '@standard-server/peer@0.10.3':
+    resolution: {integrity: sha512-ukNYt8+yQM8YoQ9+gC1DtwrKQWVFnNC1PlWy+7+ph8oCPQJE5hvOfDptfVPv5Ho6nDnyXZdtsGAPQkqJhJLNxw==}
+
+  '@standard-server/shared@0.10.3':
+    resolution: {integrity: sha512-2HRC/4SByyIMttPHo6UQznFlgNkZf7lL+5nawzuyaEIFYh6i+UA6D9pSbIx0S4WqvP7iSI2Ec36q3p7OD5qjWw==}
 
   '@supabase/auth-js@2.117.2':
     resolution: {integrity: sha512-Z3WnGwrphYZubrLbxp5Iv0tLA9A5GhvKzJ/ZXglxqwd2QEH2R4dXRltjVJ8sIn4xEW2BSFIGT0yALVJIgZeDYw==}
@@ -2130,6 +2185,10 @@ packages:
   cookie@1.1.1:
     resolution: {integrity: sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ==}
     engines: {node: '>=18'}
+
+  cookie@2.0.1:
+    resolution: {integrity: sha512-yuToqVvRrj6pfDXREyQAAv8SkAEk/8GS3jQRTiUMm66TVtBYmqQeoEjL2Lmq8Rpo6271vH76InTChTitEAm65w==}
+    engines: {node: '>=22'}
 
   copy-anything@4.1.5:
     resolution: {integrity: sha512-vePst2VLTSqPglW7Q98VwFpGiGpOHTyXIo81MO5VyLecA5zMbZw/P/V1vmwD1jksa2iJpn/YkDrJ3XhTfzUyhQ==}
@@ -3621,6 +3680,10 @@ packages:
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
+  radash@12.1.1:
+    resolution: {integrity: sha512-h36JMxKRqrAxVD8201FrCpyeNuUY9Y5zZwujr20fFO77tpUtGa6EZzfKw/3WaiBX95fq7+MpsuMLNdSnORAwSA==}
+    engines: {node: '>=14.18.0'}
+
   range-parser@1.3.0:
     resolution: {integrity: sha512-hek2mFQpPuI4E1BBKrSto+BU3e3x4xuarsbiwr3+lf7p44juvFMV0XFWQAP3xUyqXA4RrXLIoaSUGbSt056ZMw==}
     engines: {node: '>= 0.6'}
@@ -3968,6 +4031,10 @@ packages:
     os: [darwin, linux, win32, freebsd, openbsd, netbsd, sunos, android]
     hasBin: true
 
+  tagged-tag@1.0.0:
+    resolution: {integrity: sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng==}
+    engines: {node: '>=20'}
+
   tailwindcss@4.3.3:
     resolution: {integrity: sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ==}
 
@@ -4020,6 +4087,10 @@ packages:
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
+
+  type-fest@5.10.0:
+    resolution: {integrity: sha512-NoSdpq/WEiAg5sjmBkmV/hfxv6HJH4NqPNrqjtSO5CwRmpsDfaf4begxW34KdJykH/l1yHtwBWQkCRdoXO8mPA==}
+    engines: {node: '>=20'}
 
   type-is@2.1.0:
     resolution: {integrity: sha512-faYHw0anBbc/kWF3zFTEnxSFOAGUX9GFbOBthvDdLsIlEoWOFOtS0zgCiQYwIskL9iGXZL3kAXD8OoZ4GmMATA==}
@@ -5004,6 +5075,38 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
+  '@orpc/client@2.0.0-beta.43':
+    dependencies:
+      '@orpc/shared': 2.0.0-beta.43
+      '@standard-server/core': 0.10.3
+      '@standard-server/fetch': 0.10.3
+      '@standard-server/peer': 0.10.3
+
+  '@orpc/contract@2.0.0-beta.43':
+    dependencies:
+      '@orpc/client': 2.0.0-beta.43
+      '@orpc/shared': 2.0.0-beta.43
+      '@standard-schema/spec': 1.1.0
+
+  '@orpc/server@2.0.0-beta.43':
+    dependencies:
+      '@orpc/client': 2.0.0-beta.43
+      '@orpc/contract': 2.0.0-beta.43
+      '@orpc/shared': 2.0.0-beta.43
+      '@standard-server/aws-lambda': 0.10.3
+      '@standard-server/core': 0.10.3
+      '@standard-server/fastify': 0.10.3
+      '@standard-server/fetch': 0.10.3
+      '@standard-server/node': 0.10.3
+      '@standard-server/peer': 0.10.3
+      cookie: 2.0.1
+
+  '@orpc/shared@2.0.0-beta.43':
+    dependencies:
+      '@standard-server/shared': 0.10.3
+      radash: 12.1.1
+      type-fest: 5.10.0
+
   '@react-types/shared@3.36.1(react@19.2.8)':
     dependencies:
       react: 19.2.8
@@ -5081,6 +5184,42 @@ snapshots:
   '@solid-primitives/utils@6.4.1(solid-js@1.9.15)':
     dependencies:
       solid-js: 1.9.15
+
+  '@standard-schema/spec@1.1.0': {}
+
+  '@standard-server/aws-lambda@0.10.3':
+    dependencies:
+      '@standard-server/core': 0.10.3
+      '@standard-server/fetch': 0.10.3
+      '@standard-server/node': 0.10.3
+      '@standard-server/shared': 0.10.3
+
+  '@standard-server/core@0.10.3':
+    dependencies:
+      '@standard-server/shared': 0.10.3
+
+  '@standard-server/fastify@0.10.3':
+    dependencies:
+      '@standard-server/core': 0.10.3
+      '@standard-server/node': 0.10.3
+
+  '@standard-server/fetch@0.10.3':
+    dependencies:
+      '@standard-server/core': 0.10.3
+      '@standard-server/shared': 0.10.3
+
+  '@standard-server/node@0.10.3':
+    dependencies:
+      '@standard-server/core': 0.10.3
+      '@standard-server/fetch': 0.10.3
+      '@standard-server/shared': 0.10.3
+
+  '@standard-server/peer@0.10.3':
+    dependencies:
+      '@standard-server/core': 0.10.3
+      '@standard-server/shared': 0.10.3
+
+  '@standard-server/shared@0.10.3': {}
 
   '@supabase/auth-js@2.117.2':
     dependencies:
@@ -5765,6 +5904,8 @@ snapshots:
   cookie@0.7.2: {}
 
   cookie@1.1.1: {}
+
+  cookie@2.0.1: {}
 
   copy-anything@4.1.5: {}
 
@@ -7321,6 +7462,8 @@ snapshots:
 
   queue-microtask@1.2.3: {}
 
+  radash@12.1.1: {}
+
   range-parser@1.3.0: {}
 
   raw-body@3.0.2:
@@ -7796,6 +7939,8 @@ snapshots:
 
   systeminformation@5.33.13: {}
 
+  tagged-tag@1.0.0: {}
+
   tailwindcss@4.3.3: {}
 
   tapable@2.3.3: {}
@@ -7848,6 +7993,10 @@ snapshots:
   type-check@0.4.0:
     dependencies:
       prelude-ls: 1.2.1
+
+  type-fest@5.10.0:
+    dependencies:
+      tagged-tag: 1.0.0
 
   type-is@2.1.0:
     dependencies:

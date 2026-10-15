@@ -16,6 +16,8 @@
   "dependencies": {
     "@base-ui/react": "^1.8.0",
     "@internationalized/date": "^3.12.4",
+    "@orpc/client": "2.0.0-beta.43",
+    "@orpc/server": "2.0.0-beta.43",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",
     "@tanstack/react-query": "^5.104.1",
