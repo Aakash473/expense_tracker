@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { orpc } from "@/features/orpc/client";
+import { orpc } from "@/lib/orpc/client";
 
 export default function HelloClient() {
     const [message, setMessage] = useState("");
