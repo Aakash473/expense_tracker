@@ -59,12 +59,11 @@ export default function ExpenseList() {
         isSuccess,
         refetch,
     } = useQuery(orpc.expenses.list.queryOptions());
-    const expenseRows = data?.expenses ?? [];
 
     useEffect(() => {
         function handleExpensesChanged() {
             queryClient.invalidateQueries({
-                queryKey: orpc.expenses.list.queryOptions().queryKey,
+                queryKey: orpc.expenses.list.key(),
             });
         }
 
@@ -91,10 +90,10 @@ export default function ExpenseList() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {data !== undefined && expenseRows.length > 0 && (
+                    {data !== undefined && data.length > 0 && (
                         <Badge variant="secondary">
-                            {expenseRows.length}{" "}
-                            {expenseRows.length === 1
+                            {data.length}{" "}
+                            {data.length === 1
                                 ? "expense"
                                 : "expenses"}
                         </Badge>
@@ -158,7 +157,7 @@ export default function ExpenseList() {
                     </div>
                 ) : data !== undefined &&
                 isSuccess &&
-                expenseRows.length === 0 ? (
+                data.length === 0 ? (
                     <div className="flex min-h-[260px] flex-col items-center justify-center rounded-xl bg-muted/40 px-6 text-center">
                         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-background shadow-sm">
                             ₹
@@ -206,12 +205,12 @@ export default function ExpenseList() {
 
                             <div
                                 className={
-                                    expenseRows.length > 5
+                                    data.length > 5
                                         ? "expense-list-scroll max-h-[360px] overflow-y-auto pr-2"
                                         : ""
                                 }
                             >
-                                {expenseRows.map((expense, index) => {
+                                {data.map((expense, index) => {
                                     const { date, time } = formatSpentAt(expense.spentAt);
 
                                     return (
@@ -269,7 +268,7 @@ export default function ExpenseList() {
                                             />
                                         </div>
 
-                                        {index < expenseRows.length - 1 && (
+                                        {index < data.length - 1 && (
                                             <Separator />
                                         )}
                                     </div>

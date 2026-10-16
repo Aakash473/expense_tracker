@@ -17,6 +17,6 @@ export const listExpenses = os.handler(async () => {
 
         throw error;
     }
-
-    return getExpenseSummary(user.id);
+    const summary = await getExpenseSummary(user.id);
+    return summary.expenses;
 });
