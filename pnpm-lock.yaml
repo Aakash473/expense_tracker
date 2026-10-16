@@ -178,6 +178,9 @@ importers:
       '@orpc/server':
         specifier: 1.15.7
         version: 1.15.7
+      '@orpc/tanstack-query':
+        specifier: 1.15.7
+        version: 1.15.7(@orpc/client@1.15.7)(@tanstack/query-core@5.104.1)
       '@supabase/ssr':
         specifier: ^0.12.7
         version: 0.12.7(@supabase/supabase-js@2.117.2)
@@ -1344,6 +1347,12 @@ packages:
 
   '@orpc/standard-server@1.15.7':
     resolution: {integrity: sha512-iKfg90hyYhbS06C7adQxPAx+M/NLsWFjsQ7JGD6NFdmxOPhSueKrQUuQPQrDjwY482ivjxNbUFrLiOg44P97vA==}
+
+  '@orpc/tanstack-query@1.15.7':
+    resolution: {integrity: sha512-NniiZWVwPKYxnpBQoUlkwpDoS6ELDEd4zdOxRd2HTAKFgyt/5Lw95DvRuXDnqcxEPufz4SUZY7405rNIsWTQ1A==}
+    peerDependencies:
+      '@orpc/client': 1.15.7
+      '@tanstack/query-core': '>=5.80.2'
 
   '@react-types/shared@3.36.1':
     resolution: {integrity: sha512-AzsuD9OfxTOZMMvTRhlN3oHBwOmFN7tDh27LzqmHt4+uOgPhJT7ZM7/kVs/8/o0WxayMUIk3hBmCFRHv1FUoag==}
@@ -5163,6 +5172,14 @@ snapshots:
   '@orpc/standard-server@1.15.7':
     dependencies:
       '@orpc/shared': 1.15.7
+    transitivePeerDependencies:
+      - '@opentelemetry/api'
+
+  '@orpc/tanstack-query@1.15.7(@orpc/client@1.15.7)(@tanstack/query-core@5.104.1)':
+    dependencies:
+      '@orpc/client': 1.15.7
+      '@orpc/shared': 1.15.7
+      '@tanstack/query-core': 5.104.1
     transitivePeerDependencies:
       - '@opentelemetry/api'
 

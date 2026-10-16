@@ -21,7 +21,7 @@ import { Button } from "@/shared/ui/button";
 import { useEffect } from "react";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { useQuery, useQueryClient} from "@tanstack/react-query";
-import { expensesQueryOptions } from "./queries";
+import { orpc } from "@/lib/orpc/query";
 
 const categoryIcons = {
     Food: Utensils,
@@ -58,12 +58,12 @@ export default function ExpenseList() {
         isError,
         isSuccess,
         refetch,
-    } = useQuery(expensesQueryOptions);
+    } = useQuery(orpc.expenses.list.queryOptions());
 
     useEffect(() => {
         function handleExpensesChanged() {
             queryClient.invalidateQueries({
-                queryKey: expensesQueryOptions.queryKey,
+                queryKey: orpc.expenses.list.key(),
             });
         }
 
