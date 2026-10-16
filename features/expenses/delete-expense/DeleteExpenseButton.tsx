@@ -1,56 +1,59 @@
 "use client";
 
-import { useState } from "react";
-import { toast } from "sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-import { deleteExpense } from "./action";
+import { orpc } from "@/lib/orpc/query";
 import { Button } from "@/shared/ui/button";
 
 type DeleteExpenseButtonProps = {
-    expenseId: string;
-    description: string;
+	expenseId: string;
+	description: string;
 };
 
 export default function DeleteExpenseButton({
-                                                expenseId,
-                                                description,
-                                            }: DeleteExpenseButtonProps) {
-    const [isDeleting, setIsDeleting] = useState(false);
+	expenseId,
+	description,
+}: DeleteExpenseButtonProps) {
+	const queryClient = useQueryClient();
+	const router = useRouter();
 
-    async function handleDelete() {
-        setIsDeleting(true);
+	const deleteExpenseMutation = useMutation(
+		orpc.expenses.delete.mutationOptions({
+			onSuccess: async () => {
+				toast.success("Expense deleted successfully.");
 
-        try {
-            const result = await deleteExpense(expenseId);
+				await queryClient.invalidateQueries({
+					queryKey: orpc.expenses.list.key(),
+				});
 
-            if (!result.ok) {
-                toast.error(result.error);
-                return;
-            }
+				router.refresh();
+			},
+			onError: (error) => {
+				toast.error(
+					error.message || "Something went wrong while deleting the expense.",
+				);
+			},
+		}),
+	);
 
-            toast.success("Expense deleted successfully.");
-            window.dispatchEvent(new Event("expenses:changed"));
-        } catch {
-            toast.error("Something went wrong while deleting the expense.");
-        } finally {
-            setIsDeleting(false);
-        }
-    }
+	function handleDelete() {
+		deleteExpenseMutation.mutate({ expenseId });
+	}
 
-    return (
-        <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            isDisabled={isDeleting}
-            onClick={handleDelete}
-            className="text-muted-foreground opacity-100 transition-opacity hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100"
-        >
-            <Trash2 className="h-4 w-4" />
-            <span className="sr-only">
-                Delete {description}
-            </span>
-        </Button>
-    );
+	return (
+		<Button
+			type="button"
+			variant="ghost"
+			size="icon"
+			isDisabled={deleteExpenseMutation.isPending}
+			onClick={handleDelete}
+			className="text-muted-foreground opacity-100 transition-opacity hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100"
+		>
+			<Trash2 className="h-4 w-4" />
+			<span className="sr-only">Delete {description}</span>
+		</Button>
+	);
 }

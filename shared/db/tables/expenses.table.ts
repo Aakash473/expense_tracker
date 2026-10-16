@@ -1,65 +1,62 @@
 import {
-    index,
-    numeric,
-    pgTable,
-    text,
-    timestamp,
-    uuid,
+	index,
+	numeric,
+	pgTable,
+	text,
+	timestamp,
+	uuid,
 } from "drizzle-orm/pg-core";
 import { authUsers } from "drizzle-orm/supabase";
 
 import { categories } from "./categories.table";
 
 export const expenses = pgTable(
-    "expenses",
-    {
-        id: uuid("id").defaultRandom().primaryKey(),
+	"expenses",
+	{
+		id: uuid("id").defaultRandom().primaryKey(),
 
-        userId: uuid("user_id")
-            .notNull()
-            .references(() => authUsers.id, {
-                onDelete: "cascade",
-            }),
+		userId: uuid("user_id")
+			.notNull()
+			.references(() => authUsers.id, {
+				onDelete: "cascade",
+			}),
 
-        categoryId: uuid("category_id")
-            .notNull()
-            .references(() => categories.id, {
-                onDelete: "restrict",
-            }),
+		categoryId: uuid("category_id")
+			.notNull()
+			.references(() => categories.id, {
+				onDelete: "restrict",
+			}),
 
-        amount: numeric("amount", {
-            precision: 12,
-            scale: 2,
-        }).notNull(),
+		amount: numeric("amount", {
+			precision: 12,
+			scale: 2,
+		}).notNull(),
 
-        description: text("description"),
+		description: text("description"),
 
-        createdAt: timestamp("created_at", {
-            withTimezone: true,
-        })
-            .notNull()
-            .defaultNow(),
+		createdAt: timestamp("created_at", {
+			withTimezone: true,
+		})
+			.notNull()
+			.defaultNow(),
 
-        spentAt: timestamp("spent_at", {
-            withTimezone: true,
-        })
-            .notNull()
-            .defaultNow(),
+		spentAt: timestamp("spent_at", {
+			withTimezone: true,
+		})
+			.notNull()
+			.defaultNow(),
 
-        updatedAt: timestamp("updated_at", {
-            withTimezone: true,
-        })
-            .notNull()
-            .defaultNow()
-            .$onUpdate(() => new Date()),
-    },
+		updatedAt: timestamp("updated_at", {
+			withTimezone: true,
+		})
+			.notNull()
+			.defaultNow()
+			.$onUpdate(() => new Date()),
+	},
 
-    (table) => [
-        index("expenses_category_id_idx").on(table.categoryId),
+	(table) => [
+		index("expenses_category_id_idx").on(table.categoryId),
 
-        index("expenses_user_spent_at_idx").on(
-            table.userId,
-            table.spentAt,
-        ),
-    ],
+		index("expenses_user_spent_at_idx").on(table.userId, table.spentAt),
+	],
 );

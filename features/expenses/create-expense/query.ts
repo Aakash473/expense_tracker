@@ -1,31 +1,27 @@
-
+import { eq } from "drizzle-orm";
 import { db } from "@/shared/db";
 import { categories, expenses } from "@/shared/db/tables";
-import { eq } from "drizzle-orm";
 
 type InsertExpenseInput = {
-    userId: string;
-    categoryId: string;
-    amount: string;
-    description: string | null;
-    spentAt: Date;
+	userId: string;
+	categoryId: string;
+	amount: string;
+	description: string | null;
+	spentAt: Date;
 };
 
 export async function insertExpense(input: InsertExpenseInput) {
-    const result = await db
-        .insert(expenses)
-        .values(input)
-        .returning();
+	const result = await db.insert(expenses).values(input).returning();
 
-    return result[0];
+	return result[0];
 }
 
 export async function categoryExists(categoryId: string) {
-    const result = await db
-        .select({ id: categories.id })
-        .from(categories)
-        .where(eq(categories.id, categoryId))
-        .limit(1);
+	const result = await db
+		.select({ id: categories.id })
+		.from(categories)
+		.where(eq(categories.id, categoryId))
+		.limit(1);
 
-    return result.length > 0;
+	return result.length > 0;
 }

@@ -1,57 +1,52 @@
-
 "use client";
 
-import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import { setMonthlyBudget } from "./action";
+import { orpc } from "@/lib/orpc/query";
 import { Button } from "@/shared/ui/button";
 
 type UseLastMonthBudgetButtonProps = {
-    amount: number;
+	amount: number;
 };
 
-const money = (value: number) =>
-    `₹${value.toLocaleString("en-IN")}`;
+const money = (value: number) => `₹${value.toLocaleString("en-IN")}`;
 
 export default function UseLastMonthBudgetButton({
-                                                     amount,
-                                                 }: UseLastMonthBudgetButtonProps) {
-    const [isSaving, setIsSaving] = useState(false);
-    const router = useRouter();
+	amount,
+}: UseLastMonthBudgetButtonProps) {
+	const router = useRouter();
 
-    async function handleUseBudget() {
-        setIsSaving(true);
+	const setBudgetMutation = useMutation(
+		orpc.budgets.setMonthly.mutationOptions({
+			onSuccess: () => {
+				toast.success("Budget saved");
+				router.refresh();
+			},
+			onError: (error) => {
+				toast.error(
+					error.message || "Something went wrong while creating the budget.",
+				);
+			},
+		}),
+	);
 
-        try {
-            const result = await setMonthlyBudget({ amount });
+	function handleUseBudget() {
+		setBudgetMutation.mutate({ amount });
+	}
 
-            if (!result.ok) {
-                toast.error(result.error);
-                return;
-            }
-
-            toast.success("Budget saved");
-            router.refresh();
-        } catch {
-            toast.error("Something went wrong while saving the budget.");
-        } finally {
-            setIsSaving(false);
-        }
-    }
-
-    return (
-        <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            isDisabled={isSaving}
-            onPress={handleUseBudget}
-        >
-            {isSaving
-                ? "Saving..."
-                : `Use last month's ${money(amount)}`}
-        </Button>
-    );
+	return (
+		<Button
+			type="button"
+			variant="outline"
+			size="sm"
+			isDisabled={setBudgetMutation.isPending}
+			onPress={handleUseBudget}
+		>
+			{setBudgetMutation.isPending
+				? "Saving..."
+				: `Use last month's ${money(amount)}`}
+		</Button>
+	);
 }

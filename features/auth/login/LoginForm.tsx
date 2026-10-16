@@ -1,108 +1,95 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { createClient } from "@/shared/supabase/client";
-
+import { Button } from "@/shared/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
 } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
-import { Button } from "@/shared/ui/button";
 
 export default function LoginForm() {
-    const router = useRouter();
-    const supabase = createClient();
+	const router = useRouter();
+	const supabase = createClient();
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
 
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
+	const [error, setError] = useState("");
+	const [loading, setLoading] = useState(false);
 
-    const handleLogin = async (
-        event: React.FormEvent<HTMLFormElement>
-    ) => {
-        event.preventDefault();
+	const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
 
-        setError("");
-        setLoading(true);
+		setError("");
+		setLoading(true);
 
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
+		const { error } = await supabase.auth.signInWithPassword({
+			email,
+			password,
+		});
 
-        if (error) {
-            setError(error.message);
-            setLoading(false);
-            return;
-        }
+		if (error) {
+			setError(error.message);
+			setLoading(false);
+			return;
+		}
 
-        router.push("/personal");
-        router.refresh();
-    };
+		router.push("/personal");
+		router.refresh();
+	};
 
-    return (
-        <Card className="w-full max-w-md">
-            <CardHeader>
-                <CardTitle className="font-heading text-2xl">
-                    Welcome back
-                </CardTitle>
+	return (
+		<Card className="w-full max-w-md">
+			<CardHeader>
+				<CardTitle className="font-heading text-2xl">Welcome back</CardTitle>
 
-                <CardDescription>
-                    Sign in to continue to your Expense Tracker.
-                </CardDescription>
-            </CardHeader>
+				<CardDescription>
+					Sign in to continue to your Expense Tracker.
+				</CardDescription>
+			</CardHeader>
 
-            <CardContent>
-                <form onSubmit={handleLogin} className="space-y-5">
-                    <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
+			<CardContent>
+				<form onSubmit={handleLogin} className="space-y-5">
+					<div className="space-y-2">
+						<Label htmlFor="email">Email</Label>
 
-                        <Input
-                            id="email"
-                            type="email"
-                            placeholder="you@example.com"
-                            value={email}
-                            onChange={(event) => setEmail(event.target.value)}
-                            required
-                        />
-                    </div>
+						<Input
+							id="email"
+							type="email"
+							placeholder="you@example.com"
+							value={email}
+							onChange={(event) => setEmail(event.target.value)}
+							required
+						/>
+					</div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="password">Password</Label>
+					<div className="space-y-2">
+						<Label htmlFor="password">Password</Label>
 
-                        <Input
-                            id="password"
-                            type="password"
-                            placeholder="Enter your password"
-                            value={password}
-                            onChange={(event) => setPassword(event.target.value)}
-                            required
-                        />
-                    </div>
+						<Input
+							id="password"
+							type="password"
+							placeholder="Enter your password"
+							value={password}
+							onChange={(event) => setPassword(event.target.value)}
+							required
+						/>
+					</div>
 
-                    {error && (
-                        <p className="text-sm text-destructive">
-                            {error}
-                        </p>
-                    )}
+					{error && <p className="text-sm text-destructive">{error}</p>}
 
-                    <Button
-                        type="submit"
-                        className="w-full"
-                        isDisabled={loading}
-                    >
-                        {loading ? "Signing in..." : "Sign in"}
-                    </Button>
-                </form>
-            </CardContent>
-        </Card>
-    );
+					<Button type="submit" className="w-full" isDisabled={loading}>
+						{loading ? "Signing in..." : "Sign in"}
+					</Button>
+				</form>
+			</CardContent>
+		</Card>
+	);
 }
