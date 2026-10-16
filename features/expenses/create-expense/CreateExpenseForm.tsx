@@ -91,9 +91,9 @@ export default function CreateExpenseForm({
 
                 onSuccess?.();
             },
-            onError: () => {
+            onError: (error) => {
                 toast.error(
-                    "Something went wrong while adding the expense."
+                    error.message || "Something went wrong while saving."
                 );
             },
         })

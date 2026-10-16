@@ -38,9 +38,9 @@ export default function SetBudgetDialog({
                 setIsOpen(false);
                 router.refresh();
             },
-            onError: () => {
+            onError: (error) => {
                 toast.error(
-                    "Something went wrong while saving the budget."
+                    error.message || "Something went wrong while saving."
                 );
             },
         })

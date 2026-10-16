@@ -1,5 +1,4 @@
 import { ORPCError, os } from "@orpc/server";
-import { type } from "arktype";
 
 import { createExpenseSchema } from "./schema";
 import { categoryExists, insertExpense } from "./query";
@@ -9,18 +8,10 @@ import { UnauthorizedError } from "@/shared/auth/UnauthorizedError";
 export const createExpense = os
     .input(createExpenseSchema)
     .handler(async ({ input }) => {
-        const validation = createExpenseSchema(input);
-
-        if (validation instanceof type.errors) {
-            throw new ORPCError("BAD_REQUEST", {
-                message: validation[0].message,
-            });
-        }
-
         try {
             const user = await requireUser();
 
-            const { categoryId, amount, description, spentAt } = validation;
+            const { categoryId, amount, description, spentAt } = input;
             const spentAtDate = new Date(spentAt);
 
             const exists = await categoryExists(categoryId);

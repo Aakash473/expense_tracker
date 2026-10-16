@@ -25,9 +25,9 @@ export default function UseLastMonthBudgetButton({
                 toast.success("Budget saved");
                 router.refresh();
             },
-            onError: () => {
+            onError: (error) => {
                 toast.error(
-                    "Something went wrong while saving the budget."
+                    error.message || "Something went wrong while saving."
                 );
             },
         })

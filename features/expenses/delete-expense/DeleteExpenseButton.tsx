@@ -31,9 +31,9 @@ export default function DeleteExpenseButton({
 
                 router.refresh();
             },
-            onError: () => {
+            onError: (error) => {
                 toast.error(
-                    "Something went wrong while deleting the expense."
+                    error.message || "Something went wrong while saving."
                 );
             },
         })

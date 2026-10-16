@@ -18,9 +18,8 @@ import { Badge } from "@/shared/ui/badge";
 import { Separator } from "@/shared/ui/separator";
 import DeleteExpenseButton from "@/features/expenses/delete-expense/DeleteExpenseButton";
 import { Button } from "@/shared/ui/button";
-import { useEffect } from "react";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { useQuery, useQueryClient} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc/query";
 
 const categoryIcons = {
@@ -49,7 +48,6 @@ function formatSpentAt(value: string) {
 }
 
 export default function ExpenseList() {
-    const queryClient = useQueryClient();
     const {
         data,
         error,
@@ -59,26 +57,6 @@ export default function ExpenseList() {
         isSuccess,
         refetch,
     } = useQuery(orpc.expenses.list.queryOptions());
-
-    useEffect(() => {
-        function handleExpensesChanged() {
-            queryClient.invalidateQueries({
-                queryKey: orpc.expenses.list.key(),
-            });
-        }
-
-        window.addEventListener(
-            "expenses:changed",
-            handleExpensesChanged
-        );
-
-        return () => {
-            window.removeEventListener(
-                "expenses:changed",
-                handleExpensesChanged
-            );
-        };
-    }, [queryClient]);
 
     return (
         <Card className="h-full">
