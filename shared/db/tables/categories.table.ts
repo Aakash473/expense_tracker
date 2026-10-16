@@ -1,25 +1,20 @@
-import {
-    pgTable,
-    text,
-    timestamp,
-    uuid,
-} from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 export const categories = pgTable("categories", {
-    id: uuid("id").defaultRandom().primaryKey(),
+	id: uuid("id").defaultRandom().primaryKey(),
 
-    name: text("name").notNull().unique(),
+	name: text("name").notNull().unique(),
 
-    createdAt: timestamp("created_at", {
-        withTimezone: true,
-    })
-        .notNull()
-        .defaultNow(),
+	createdAt: timestamp("created_at", {
+		withTimezone: true,
+	})
+		.notNull()
+		.defaultNow(),
 
-    updatedAt: timestamp("updated_at", {
-        withTimezone: true,
-    })
-        .notNull()
-        .defaultNow()
-        .$onUpdate(() => new Date()),
+	updatedAt: timestamp("updated_at", {
+		withTimezone: true,
+	})
+		.notNull()
+		.defaultNow()
+		.$onUpdate(() => new Date()),
 });

@@ -4,15 +4,12 @@ import { router } from "@/lib/orpc/router";
 const handler = new RPCHandler(router);
 
 async function handleRequest(request: Request) {
-    const { response } = await handler.handle(request, {
-        prefix: "/rpc",
-        context: {},
-    });
+	const { response } = await handler.handle(request, {
+		prefix: "/rpc",
+		context: {},
+	});
 
-    return response ?? new Response("Not found", { status: 404 });
+	return response ?? new Response("Not found", { status: 404 });
 }
 
-export {
-    handleRequest as GET,
-    handleRequest as POST,
-};
+export { handleRequest as GET, handleRequest as POST };

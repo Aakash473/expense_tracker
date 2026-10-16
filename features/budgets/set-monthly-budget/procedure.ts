@@ -1,5 +1,4 @@
 import { ORPCError, os } from "@orpc/server";
-import { type } from "arktype";
 
 import { requireUser } from "@/shared/auth/requireUser";
 import { UnauthorizedError } from "@/shared/auth/UnauthorizedError";
@@ -9,32 +8,24 @@ import { upsertMonthlyBudget } from "./query";
 import { setMonthlyBudgetSchema } from "./schema";
 
 export const setMonthlyBudget = os
-    .input(setMonthlyBudgetSchema)
-    .handler(async ({ input }) => {
-        const validation = setMonthlyBudgetSchema(input);
+	.input(setMonthlyBudgetSchema)
+	.handler(async ({ input }) => {
+		try {
+			const user = await requireUser();
+			const { month } = getMonthRange(new Date());
 
-        if (validation instanceof type.errors) {
-            throw new ORPCError("BAD_REQUEST", {
-                message: validation[0].message,
-            });
-        }
+			return await upsertMonthlyBudget({
+				userId: user.id,
+				month,
+				amount: input.amount.toString(),
+			});
+		} catch (error) {
+			if (error instanceof UnauthorizedError) {
+				throw new ORPCError("UNAUTHORIZED", {
+					message: "Unauthorized",
+				});
+			}
 
-        try {
-            const user = await requireUser();
-            const { month } = getMonthRange(new Date());
-
-            return await upsertMonthlyBudget({
-                userId: user.id,
-                month,
-                amount: validation.amount.toString(),
-            });
-        } catch (error) {
-            if (error instanceof UnauthorizedError) {
-                throw new ORPCError("UNAUTHORIZED", {
-                    message: "Unauthorized",
-                });
-            }
-
-            throw error;
-        }
-    });
+			throw error;
+		}
+	});

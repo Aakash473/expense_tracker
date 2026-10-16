@@ -3,53 +3,49 @@ import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
 
 import "./globals.css";
 
-import ThemeProvider from "@/shared/theme/ThemeProvider";
-import { cn } from "@/shared/utils";
-import { Toaster } from "@/shared/ui/sonner";
 import QueryProvider from "@/shared/query/QueryProvider";
+import ThemeProvider from "@/shared/theme/ThemeProvider";
+import { Toaster } from "@/shared/ui/sonner";
+import { cn } from "@/shared/utils";
 
 const jetbrainsMonoHeading = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
+	subsets: ["latin"],
+	variable: "--font-jetbrains-mono",
 });
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+	variable: "--font-geist-sans",
+	subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+	variable: "--font-geist-mono",
+	subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Expense Tracker",
-  description: "Track your expenses easily.",
+	title: "Expense Tracker",
+	description: "Track your expenses easily.",
 };
 
-export default function RootLayout({
-                                     children,
-                                   }: LayoutProps<"/">) {
-  return (
-      <html
-          lang="en"
-          suppressHydrationWarning
-          className={cn(
-              "h-full",
-              geistSans.variable,
-              geistMono.variable,
-              jetbrainsMonoHeading.variable
-          )}
-      >
-      <body className="min-h-full flex flex-col antialiased">
-      <ThemeProvider>
-          <QueryProvider>
-              {children}
-          </QueryProvider>
-          <Toaster />
-      </ThemeProvider>
-      </body>
-      </html>
-  );
+export default function RootLayout({ children }: LayoutProps<"/">) {
+	return (
+		<html
+			lang="en"
+			suppressHydrationWarning
+			className={cn(
+				"h-full",
+				geistSans.variable,
+				geistMono.variable,
+				jetbrainsMonoHeading.variable,
+			)}
+		>
+			<body className="min-h-full flex flex-col antialiased">
+				<ThemeProvider>
+					<QueryProvider>{children}</QueryProvider>
+					<Toaster />
+				</ThemeProvider>
+			</body>
+		</html>
+	);
 }
