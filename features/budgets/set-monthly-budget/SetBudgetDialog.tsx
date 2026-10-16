@@ -1,12 +1,12 @@
-
 "use client";
 
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 
-import { setMonthlyBudget } from "./action";
-
+import { orpc } from "@/lib/orpc/query";
 import { Button } from "@/shared/ui/button";
 import {
     Dialog,
@@ -26,33 +26,32 @@ export default function SetBudgetDialog({
                                         }: SetBudgetDialogProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [amount, setAmount] = useState(
-        currentBudget === null ? "" : String(currentBudget),
+        currentBudget === null ? "" : String(currentBudget)
     );
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    async function handleSubmit(
-        event: React.FormEvent<HTMLFormElement>,
-    ) {
+    const router = useRouter();
+
+    const setBudgetMutation = useMutation(
+        orpc.budgets.setMonthly.mutationOptions({
+            onSuccess: () => {
+                toast.success("Budget saved");
+                setIsOpen(false);
+                router.refresh();
+            },
+            onError: () => {
+                toast.error(
+                    "Something went wrong while saving the budget."
+                );
+            },
+        })
+    );
+
+    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        setIsSubmitting(true);
 
-        try {
-            const result = await setMonthlyBudget({
-                amount: Number(amount),
-            });
-
-            if (!result.ok) {
-                toast.error(result.error);
-                return;
-            }
-
-            toast.success("Budget saved");
-            setIsOpen(false);
-        } catch {
-            toast.error("Something went wrong while saving the budget.");
-        } finally {
-            setIsSubmitting(false);
-        }
+        setBudgetMutation.mutate({
+            amount: Number(amount),
+        });
     }
 
     return (
@@ -109,13 +108,16 @@ export default function SetBudgetDialog({
                         </Button>
                         <Button
                             type="submit"
-                            isDisabled={isSubmitting}
+                            isDisabled={setBudgetMutation.isPending}
                         >
-                            {isSubmitting ? "Saving..." : "Save budget"}
+                            {setBudgetMutation.isPending
+                                ? "Saving..."
+                                : "Save budget"}
                         </Button>
                     </div>
                 </form>
             </Dialog>
         </DialogTrigger>
     );
+
 }

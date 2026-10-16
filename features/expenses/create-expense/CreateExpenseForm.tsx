@@ -1,7 +1,7 @@
-
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
     Plus,
@@ -9,12 +9,12 @@ import {
     Clock,
     ChevronDown,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { type } from "arktype";
 import { parseDate as parseCalendarDate } from "@internationalized/date";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { createExpenseSchema } from "./schema";
-import { createExpense } from "./action";
+import { orpc } from "@/lib/orpc/query";
 import {
     getLocalDateTime,
     formatDate,
@@ -49,8 +49,6 @@ type CreateExpenseFormProps = {
     onSuccess?: () => void;
 };
 
-
-
 export default function CreateExpenseForm({
                                               categories,
                                               onSuccess,
@@ -65,9 +63,41 @@ export default function CreateExpenseForm({
     const [time, setTime] = useState(initialDateTime.time);
 
     const [timeError, setTimeError] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const queryClient = useQueryClient();
     const router = useRouter();
+
+    const createExpenseMutation = useMutation(
+        orpc.expenses.create.mutationOptions({
+            onSuccess: async () => {
+                toast.success("Expense added successfully.");
+
+                await queryClient.invalidateQueries({
+                    queryKey: orpc.expenses.list.key(),
+                });
+
+                // Refresh Server Components, including the budget card
+                // and spending summary.
+                router.refresh();
+
+                setAmount("");
+                setCategory("");
+                setDescription("");
+
+                const current = getLocalDateTime();
+                setDate(current.date);
+                setTime(current.time);
+                setTimeError("");
+
+                onSuccess?.();
+            },
+            onError: () => {
+                toast.error(
+                    "Something went wrong while adding the expense."
+                );
+            },
+        })
+    );
 
     const today = getLocalDateTime().date;
     const isToday = date === today;
@@ -87,8 +117,7 @@ export default function CreateExpenseForm({
         setTimeError("");
     }
 
-
-    async function handleSubmit(
+    function handleSubmit(
         event: React.FormEvent<HTMLFormElement>
     ) {
         event.preventDefault();
@@ -119,39 +148,8 @@ export default function CreateExpenseForm({
             return;
         }
 
-        setIsSubmitting(true);
-
-        try {
-            const result = await createExpense(validation);
-
-            if (!result.ok) {
-                toast.error(result.error);
-                return;
-            }
-
-            toast.success("Expense added successfully.");
-
-            window.dispatchEvent(new Event("expenses:changed"));
-            router.refresh();
-
-            setAmount("");
-            setCategory("");
-            setDescription("");
-
-            const current = getLocalDateTime();
-            setDate(current.date);
-            setTime(current.time);
-
-            onSuccess?.();
-        } catch {
-            toast.error(
-                "Something went wrong while adding the expense."
-            );
-        } finally {
-            setIsSubmitting(false);
-        }
+        createExpenseMutation.mutate(validation);
     }
-
 
     return (
         <form onSubmit={handleSubmit}>
@@ -188,7 +186,9 @@ export default function CreateExpenseForm({
                     <Select
                         selectedKey={category}
                         onSelectionChange={(key) => {
-                            if (key) setCategory(String(key));
+                            if (key) {
+                                setCategory(String(key));
+                            }
                         }}
                     >
                         <SelectTrigger className="w-full">
@@ -210,7 +210,9 @@ export default function CreateExpenseForm({
 
                 {/* Description */}
                 <div className="space-y-2 sm:col-span-2">
-                    <Label htmlFor="description">Description</Label>
+                    <Label htmlFor="description">
+                        Description
+                    </Label>
 
                     <Input
                         id="description"
@@ -246,7 +248,6 @@ export default function CreateExpenseForm({
                             <Calendar
                                 value={parseCalendarDate(date)}
                                 maxValue={parseCalendarDate(today)}
-
                                 onChange={(selectedDate) => {
                                     if (!selectedDate) return;
 
@@ -262,14 +263,14 @@ export default function CreateExpenseForm({
                                     if (selectedDateString !== today) {
                                         setTime("");
                                     } else {
-                                        setTime(getLocalDateTime().time);
+                                        setTime(
+                                            getLocalDateTime().time
+                                        );
                                     }
                                 }}
-
                             />
                         </Popover>
                     </PopoverTrigger>
-
                 </div>
 
                 {/* Expense time */}
@@ -296,12 +297,14 @@ export default function CreateExpenseForm({
                                     <p className="font-medium">
                                         Select time
                                     </p>
+
                                     <p className="text-xs text-muted-foreground">
                                         Choose when you made this expense.
                                     </p>
                                 </div>
 
                                 <div className="grid grid-cols-3 gap-2">
+                                    {/* Hour */}
                                     <div className="space-y-1">
                                         <Label>Hour</Label>
 
@@ -330,18 +333,25 @@ export default function CreateExpenseForm({
                                                         key={hour}
                                                         id={String(hour)}
                                                     >
-                                                        {String(hour).padStart(2, "0")}
+                                                        {String(hour).padStart(
+                                                            2,
+                                                            "0"
+                                                        )}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
                                     </div>
 
+                                    {/* Minute */}
                                     <div className="space-y-1">
                                         <Label>Minute</Label>
 
                                         <Select
-                                            selectedKey={String(minutes).padStart(2, "0")}
+                                            selectedKey={String(minutes).padStart(
+                                                2,
+                                                "0"
+                                            )}
                                             onSelectionChange={(key) => {
                                                 if (key) {
                                                     updateTime(
@@ -363,15 +373,22 @@ export default function CreateExpenseForm({
                                                 ).map((minute) => (
                                                     <SelectItem
                                                         key={minute}
-                                                        id={String(minute).padStart(2, "0")}
+                                                        id={String(minute).padStart(
+                                                            2,
+                                                            "0"
+                                                        )}
                                                     >
-                                                        {String(minute).padStart(2, "0")}
+                                                        {String(minute).padStart(
+                                                            2,
+                                                            "0"
+                                                        )}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
                                     </div>
 
+                                    {/* AM / PM */}
                                     <div className="space-y-1">
                                         <Label>Period</Label>
 
@@ -392,8 +409,12 @@ export default function CreateExpenseForm({
                                             </SelectTrigger>
 
                                             <SelectContent>
-                                                <SelectItem id="AM">AM</SelectItem>
-                                                <SelectItem id="PM">PM</SelectItem>
+                                                <SelectItem id="AM">
+                                                    AM
+                                                </SelectItem>
+                                                <SelectItem id="PM">
+                                                    PM
+                                                </SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -420,10 +441,12 @@ export default function CreateExpenseForm({
                     <Button
                         type="submit"
                         className="w-full"
-                        isDisabled={isSubmitting}
+                        isDisabled={createExpenseMutation.isPending}
                     >
                         <Plus />
-                        {isSubmitting ? "Adding..." : "Add Expense"}
+                        {createExpenseMutation.isPending
+                            ? "Adding..."
+                            : "Add Expense"}
                     </Button>
                 </div>
             </div>
