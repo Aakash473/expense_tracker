@@ -1,4 +1,6 @@
+import { sql } from "drizzle-orm";
 import {
+	check,
 	index,
 	numeric,
 	pgTable,
@@ -7,7 +9,6 @@ import {
 	uuid,
 } from "drizzle-orm/pg-core";
 import { authUsers } from "drizzle-orm/supabase";
-
 import { sharedGroups } from "./shared-groups.table";
 
 export const sharedSettlements = pgTable(
@@ -21,17 +22,13 @@ export const sharedSettlements = pgTable(
 				onDelete: "cascade",
 			}),
 
-		paidBy: uuid("paid_by")
-			.notNull()
-			.references(() => authUsers.id, {
-				onDelete: "restrict",
-			}),
+		paidBy: uuid("paid_by").references(() => authUsers.id, {
+			onDelete: "set null",
+		}),
 
-		paidTo: uuid("paid_to")
-			.notNull()
-			.references(() => authUsers.id, {
-				onDelete: "restrict",
-			}),
+		paidTo: uuid("paid_to").references(() => authUsers.id, {
+			onDelete: "set null",
+		}),
 
 		amount: numeric("amount", {
 			precision: 12,
@@ -53,5 +50,11 @@ export const sharedSettlements = pgTable(
 		),
 		index("shared_settlements_paid_by_idx").on(table.paidBy),
 		index("shared_settlements_paid_to_idx").on(table.paidTo),
+		check("shared_settlements_amount_positive", sql`${table.amount} > 0`),
+
+		check(
+			"shared_settlements_no_self_payment",
+			sql`${table.paidBy} IS NULL OR ${table.paidTo} IS NULL OR ${table.paidBy} <> ${table.paidTo}`,
+		),
 	],
 );

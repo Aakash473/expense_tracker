@@ -10,11 +10,9 @@ export const sharedGroups = pgTable(
 
 		description: text("description"),
 
-		createdBy: uuid("created_by")
-			.notNull()
-			.references(() => authUsers.id, {
-				onDelete: "restrict",
-			}),
+		createdBy: uuid("created_by").references(() => authUsers.id, {
+			onDelete: "set null",
+		}),
 
 		createdAt: timestamp("created_at", {
 			withTimezone: true,
