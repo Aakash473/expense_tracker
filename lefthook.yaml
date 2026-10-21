@@ -2,7 +2,12 @@ pre-push:
   commands:
     checks:
       run: |
-        pnpm biome check --write
         pnpm lint &&
         pnpm typecheck &&
         pnpm build
+
+pre-commit:
+  commands:
+    checks:
+      run: |
+        pnpm biome check --write
