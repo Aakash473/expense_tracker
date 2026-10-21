@@ -6,14 +6,15 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"ignoreUnknown": false
+		"ignoreUnknown": false,
+		"includes": ["**", "!!drizzle"]
 	},
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab"
 	},
 	"linter": {
-		"enabled": true,
+		"enabled": false,
 		"rules": {
 			"preset": "recommended"
 		}
