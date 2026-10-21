@@ -29,11 +29,9 @@ export const sharedGroupMembers = pgTable(
 				onDelete: "cascade",
 			}),
 
-		userId: uuid("user_id")
-			.notNull()
-			.references(() => authUsers.id, {
-				onDelete: "cascade",
-			}),
+		userId: uuid("user_id").references(() => authUsers.id, {
+			onDelete: "set null",
+		}),
 
 		role: sharedGroupRole("role").notNull().default("member"),
 

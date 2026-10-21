@@ -1,4 +1,6 @@
+import { sql } from "drizzle-orm";
 import {
+	check,
 	index,
 	numeric,
 	pgTable,
@@ -7,7 +9,6 @@ import {
 	uuid,
 } from "drizzle-orm/pg-core";
 import { authUsers } from "drizzle-orm/supabase";
-
 import { sharedGroups } from "./shared-groups.table";
 
 export const sharedExpenses = pgTable(
@@ -28,17 +29,13 @@ export const sharedExpenses = pgTable(
 			scale: 2,
 		}).notNull(),
 
-		paidBy: uuid("paid_by")
-			.notNull()
-			.references(() => authUsers.id, {
-				onDelete: "restrict",
-			}),
+		paidBy: uuid("paid_by").references(() => authUsers.id, {
+			onDelete: "set null",
+		}),
 
-		createdBy: uuid("created_by")
-			.notNull()
-			.references(() => authUsers.id, {
-				onDelete: "restrict",
-			}),
+		createdBy: uuid("created_by").references(() => authUsers.id, {
+			onDelete: "set null",
+		}),
 
 		spentAt: timestamp("spent_at", {
 			withTimezone: true,
@@ -65,5 +62,6 @@ export const sharedExpenses = pgTable(
 			table.spentAt,
 		),
 		index("shared_expenses_paid_by_idx").on(table.paidBy),
+		check("shared_expenses_amount_positive", sql`${table.amount} > 0`),
 	],
 );
