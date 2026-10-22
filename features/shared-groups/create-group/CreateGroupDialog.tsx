@@ -47,8 +47,9 @@ export default function CreateGroupDialog() {
 
 	return (
 		<DialogTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
-			<Button type="button" size="sm">
+			<Button type="button" size="sm" aria-label="Add expense">
 				<Plus className="h-4 w-4" />
+				<span className="hidden sm:inline">Create group</span>
 			</Button>
 
 			<Dialog className="sm:max-w-md">
