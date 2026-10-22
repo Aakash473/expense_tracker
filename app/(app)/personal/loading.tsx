@@ -4,28 +4,22 @@ import { Skeleton } from "@/shared/ui/skeleton";
 export default function Loading() {
 	return (
 		<main className="min-h-screen bg-background text-foreground">
-			<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-				{/* Dashboard Header */}
-				<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-					<div className="flex items-center gap-4">
-						{/* Header icon */}
-						<Skeleton className="h-11 w-11 rounded-xl" />
-
-						<div className="space-y-2">
-							<Skeleton className="h-8 w-56" />
-							<Skeleton className="h-4 w-72" />
-						</div>
-					</div>
-
+			{/* Page Header Skeleton */}
+			<div className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
+				<div className="mx-auto flex min-h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
 					<div className="flex items-center gap-3">
-						{/* Theme toggle */}
+						{/* Sidebar trigger */}
 						<Skeleton className="h-8 w-8 rounded-md" />
 
-						{/* Logout */}
-						<Skeleton className="h-8 w-20 rounded-md" />
+						{/* Page title */}
+						<Skeleton className="h-7 w-52" />
 					</div>
-				</div>
 
+					{/* Add expense button */}
+					<Skeleton className="h-8 w-28 rounded-md" />
+				</div>
+			</div>
+			<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
 				{/* Dashboard Grid */}
 				<div className="mt-10 grid grid-cols-12 gap-6">
 					{/* Total Spending */}
