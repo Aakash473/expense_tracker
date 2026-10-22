@@ -60,7 +60,6 @@ jobs:
           }
           NODE
 
-
       - name: Run database migrations
         run: pnpm db:migrate
         env:
