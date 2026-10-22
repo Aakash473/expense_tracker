@@ -2,6 +2,7 @@ import { setMonthlyBudget } from "@/features/budgets/set-monthly-budget/procedur
 import { createExpense } from "@/features/expenses/create-expense/procedure";
 import { deleteExpense } from "@/features/expenses/delete-expense/procedure";
 import { listExpenses } from "@/features/expenses/list-expenses/procedure";
+import { createGroup } from "@/features/shared-groups/create-group/procedure";
 
 export const router = {
 	expenses: {
@@ -11,5 +12,8 @@ export const router = {
 	},
 	budgets: {
 		setMonthly: setMonthlyBudget,
+	},
+	sharedGroups: {
+		create: createGroup,
 	},
 };
