@@ -34,6 +34,33 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+
+      - name: Test database connection
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          node --input-type=module <<'NODE'
+          import postgres from "postgres";
+
+          const sql = postgres(process.env.DATABASE_URL, {
+            connect_timeout: 10,
+          });
+
+          try {
+            await sql`select 1`;
+            console.log("Database connection successful");
+          } catch (error) {
+            console.error("Database connection failed:", {
+              code: error.code,
+              message: error.message,
+            });
+            process.exitCode = 1;
+          } finally {
+            await sql.end();
+          }
+          NODE
+
+
       - name: Run database migrations
         run: pnpm db:migrate
         env:
