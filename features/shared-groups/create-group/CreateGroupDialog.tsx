@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -46,12 +47,13 @@ export default function CreateGroupDialog() {
 
 	return (
 		<DialogTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
-			<Button type="button" size="sm">
-				Create group
+			<Button type="button" size="sm" aria-label="Create Group">
+				<Plus className="h-4 w-4" />
+				<span className="hidden sm:inline">Create group</span>
 			</Button>
 
 			<Dialog className="sm:max-w-md">
-				<DialogTitle>Create a shared group</DialogTitle>
+				<DialogTitle>Shared Group</DialogTitle>
 
 				<DialogDescription>
 					Create a group to manage expenses with other people.

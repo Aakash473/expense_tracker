@@ -1,4 +1,6 @@
 import { Settings, Wallet } from "lucide-react";
+import type { ReactNode } from "react";
+
 import {
 	Sidebar,
 	SidebarContent,
@@ -8,9 +10,16 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/shared/ui/sidebar";
+
 import DashboardSidebarNav from "./DashboardSidebarNav";
 
-export default function DashboardSidebar() {
+type DashboardSidebarProps = {
+	footerItems?: ReactNode;
+};
+
+export default function DashboardSidebar({
+	footerItems,
+}: DashboardSidebarProps) {
 	return (
 		<Sidebar>
 			<SidebarHeader>
@@ -40,6 +49,8 @@ export default function DashboardSidebar() {
 							<span>Settings</span>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
+
+					{footerItems}
 				</SidebarMenu>
 			</SidebarFooter>
 		</Sidebar>
