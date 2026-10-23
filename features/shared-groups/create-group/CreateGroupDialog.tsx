@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -21,10 +21,15 @@ export default function CreateGroupDialog() {
 	const [isOpen, setIsOpen] = useState(false);
 	const [name, setName] = useState("");
 	const [description, setDescription] = useState("");
+	const queryClient = useQueryClient();
 
 	const createGroupMutation = useMutation(
 		orpc.sharedGroups.create.mutationOptions({
-			onSuccess: () => {
+			onSuccess: async () => {
+				await queryClient.invalidateQueries({
+					queryKey: orpc.sharedGroups.listMy.key(),
+				});
+
 				toast.success("Group created successfully");
 				setName("");
 				setDescription("");
