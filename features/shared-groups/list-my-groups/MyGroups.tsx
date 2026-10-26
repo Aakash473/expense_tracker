@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Users } from "lucide-react";
+import Link from "next/link";
 
 import { orpc } from "@/lib/orpc/query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -60,27 +61,33 @@ export default function MyGroups() {
 	return (
 		<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 			{groups.map((group) => (
-				<Card key={group.id}>
-					<CardHeader>
-						<CardTitle className="truncate">{group.name}</CardTitle>
-						{group.description && (
-							<p className="text-sm text-muted-foreground">
-								{group.description}
-							</p>
-						)}
-					</CardHeader>
+				<Link
+					key={group.id}
+					href={`/shared/${group.id}`}
+					className="block rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring"
+				>
+					<Card className="h-full transition-colors hover:bg-accent/50">
+						<CardHeader>
+							<CardTitle className="truncate">{group.name}</CardTitle>
+							{group.description && (
+								<p className="text-sm text-muted-foreground">
+									{group.description}
+								</p>
+							)}
+						</CardHeader>
 
-					<CardContent className="flex items-center justify-between gap-3">
-						<span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-medium capitalize">
-							{group.role}
-						</span>
-						<span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-							<Users className="h-4 w-4" />
-							{group.acceptedMemberCount}{" "}
-							{group.acceptedMemberCount === 1 ? "member" : "members"}
-						</span>
-					</CardContent>
-				</Card>
+						<CardContent className="flex items-center justify-between gap-3">
+							<span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-medium capitalize">
+								{group.role}
+							</span>
+							<span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+								<Users className="h-4 w-4" />
+								{group.acceptedMemberCount}{" "}
+								{group.acceptedMemberCount === 1 ? "member" : "members"}
+							</span>
+						</CardContent>
+					</Card>
+				</Link>
 			))}
 		</div>
 	);
