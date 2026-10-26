@@ -1,31 +1,18 @@
-import { ORPCError, os } from "@orpc/server";
+import { protectedProcedure } from "@/lib/orpc/procedures";
 
-import { requireUser } from "@/shared/auth/requireUser";
-import { UnauthorizedError } from "@/shared/auth/UnauthorizedError";
 import { getMonthRange } from "@/shared/date/month-range";
 
 import { upsertMonthlyBudget } from "./query";
 import { setMonthlyBudgetSchema } from "./schema";
 
-export const setMonthlyBudget = os
+export const setMonthlyBudget = protectedProcedure
 	.input(setMonthlyBudgetSchema)
-	.handler(async ({ input }) => {
-		try {
-			const user = await requireUser();
-			const { month } = getMonthRange(new Date());
+	.handler(async ({ input, context }) => {
+		const { month } = getMonthRange(new Date());
 
-			return await upsertMonthlyBudget({
-				userId: user.id,
-				month,
-				amount: input.amount.toString(),
-			});
-		} catch (error) {
-			if (error instanceof UnauthorizedError) {
-				throw new ORPCError("UNAUTHORIZED", {
-					message: "Unauthorized",
-				});
-			}
-
-			throw error;
-		}
+		return await upsertMonthlyBudget({
+			userId: context.user.id,
+			month,
+			amount: input.amount.toString(),
+		});
 	});

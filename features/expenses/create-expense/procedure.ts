@@ -1,40 +1,28 @@
-import { ORPCError, os } from "@orpc/server";
-import { requireUser } from "@/shared/auth/requireUser";
-import { UnauthorizedError } from "@/shared/auth/UnauthorizedError";
+import { ORPCError } from "@orpc/server";
+
+import { protectedProcedure } from "@/lib/orpc/procedures";
+
 import { categoryExists, insertExpense } from "./query";
 import { createExpenseSchema } from "./schema";
 
-export const createExpense = os
+export const createExpense = protectedProcedure
 	.input(createExpenseSchema)
-	.handler(async ({ input }) => {
-		try {
-			const user = await requireUser();
+	.handler(async ({ input, context }) => {
+		const { categoryId, amount, description, spentAt } = input;
 
-			const { categoryId, amount, description, spentAt } = input;
-			const spentAtDate = new Date(spentAt);
+		const exists = await categoryExists(categoryId);
 
-			const exists = await categoryExists(categoryId);
-
-			if (!exists) {
-				throw new ORPCError("NOT_FOUND", {
-					message: "Category does not exist",
-				});
-			}
-
-			return await insertExpense({
-				userId: user.id,
-				categoryId,
-				amount: amount.toString(),
-				description,
-				spentAt: spentAtDate,
+		if (!exists) {
+			throw new ORPCError("NOT_FOUND", {
+				message: "Category does not exist",
 			});
-		} catch (error) {
-			if (error instanceof UnauthorizedError) {
-				throw new ORPCError("UNAUTHORIZED", {
-					message: "Unauthorized",
-				});
-			}
-
-			throw error;
 		}
+
+		return await insertExpense({
+			userId: context.user.id,
+			categoryId,
+			amount: amount.toString(),
+			description,
+			spentAt: new Date(spentAt),
+		});
 	});
