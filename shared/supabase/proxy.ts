@@ -36,17 +36,21 @@ export async function updateSession(request: NextRequest) {
 
 	const user = data?.claims;
 
-	if (
-		!user &&
-		!request.nextUrl.pathname.startsWith("/login") &&
-		!request.nextUrl.pathname.startsWith("/auth")
-	) {
-		const url = request.nextUrl.clone();
+	if (!user) {
+		// oRPC requests must receive an HTTP 401, not a login page.
+		if (request.nextUrl.pathname.startsWith("/rpc")) {
+			return new NextResponse("Unauthorized", { status: 401 });
+		}
 
-		url.pathname = "/login";
+		// Allow unauthenticated access to login and auth routes.
+		if (
+			!request.nextUrl.pathname.startsWith("/login") &&
+			!request.nextUrl.pathname.startsWith("/auth")
+		) {
+			const url = request.nextUrl.clone();
+			url.pathname = "/login";
 
-		return NextResponse.redirect(url);
+			return NextResponse.redirect(url);
+		}
 	}
-
-	return supabaseResponse;
 }
