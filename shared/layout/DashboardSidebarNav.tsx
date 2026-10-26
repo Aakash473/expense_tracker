@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, Users } from "lucide-react";
+import { LayoutDashboard, UserRound, Users } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import {
@@ -23,6 +23,11 @@ const navigationItems = [
 		href: "/shared",
 		icon: Users,
 	},
+	{
+		title: "Profile",
+		href: "/profile",
+		icon: UserRound,
+	},
 ];
 
 export default function DashboardSidebarNav() {
@@ -35,7 +40,9 @@ export default function DashboardSidebarNav() {
 			<SidebarGroupContent>
 				<SidebarMenu>
 					{navigationItems.map((item) => {
-						const isActive = pathname === item.href;
+						const isActive =
+							pathname === item.href ||
+							(item.href === "/shared" && pathname.startsWith("/shared/"));
 
 						return (
 							<SidebarMenuItem key={item.href}>
