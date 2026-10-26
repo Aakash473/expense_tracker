@@ -3,6 +3,7 @@ import { createExpense } from "@/features/expenses/create-expense/procedure";
 import { deleteExpense } from "@/features/expenses/delete-expense/procedure";
 import { listExpenses } from "@/features/expenses/list-expenses/procedure";
 import { createGroup } from "@/features/shared-groups/create-group/procedure";
+import { getGroupDetailsProcedure } from "@/features/shared-groups/get-group-details/procedure";
 import { listMyGroups } from "@/features/shared-groups/list-my-groups/procedure";
 
 export const router = {
@@ -17,5 +18,6 @@ export const router = {
 	sharedGroups: {
 		create: createGroup,
 		listMy: listMyGroups,
+		getDetails: getGroupDetailsProcedure,
 	},
 };
