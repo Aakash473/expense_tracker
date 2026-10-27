@@ -2,6 +2,7 @@
 
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useSyncExternalStore } from "react";
 
 import { Toggle } from "@/shared/ui/toggle";
 
@@ -9,9 +10,17 @@ type ThemeToggleProps = {
 	inSidebar?: boolean;
 };
 
+const subscribeNoop = () => () => {};
+
 export default function ThemeToggle({ inSidebar = false }: ThemeToggleProps) {
 	const { resolvedTheme, setTheme } = useTheme();
-	const isDark = resolvedTheme === "dark";
+	// The server can't know the theme, so render the light state until hydrated.
+	const isHydrated = useSyncExternalStore(
+		subscribeNoop,
+		() => true,
+		() => false,
+	);
+	const isDark = isHydrated && resolvedTheme === "dark";
 
 	return (
 		<Toggle
