@@ -2,6 +2,7 @@ import { and, eq } from "drizzle-orm";
 
 import { db } from "@/shared/db";
 import { sharedGroupMembers, sharedGroups } from "@/shared/db/tables";
+import { supabaseAdmin } from "@/shared/supabase/admin";
 
 export async function getGroupDetails(groupId: string, userId: string) {
 	const [group] = await db
@@ -41,8 +42,33 @@ export async function getGroupDetails(groupId: string, userId: string) {
 			),
 		);
 
+	const membersWithEmails = await Promise.all(
+		members.map(async (member) => {
+			const memberUserId = member.userId;
+
+			if (!memberUserId) {
+				return {
+					...member,
+					email: null,
+				};
+			}
+
+			const { data, error } =
+				await supabaseAdmin.auth.admin.getUserById(memberUserId);
+
+			if (error) {
+				throw error;
+			}
+
+			return {
+				...member,
+				email: data.user?.email ?? null,
+			};
+		}),
+	);
+
 	return {
 		...group,
-		members,
+		members: membersWithEmails,
 	};
 }

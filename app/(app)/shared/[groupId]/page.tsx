@@ -29,13 +29,7 @@ export default async function GroupDetailsPage({
 
 	const { groupId } = await params;
 
-	let group;
-
-	try {
-		group = await getGroupDetails(groupId, user.id);
-	} catch {
-		notFound();
-	}
+	const group = await getGroupDetails(groupId, user.id).catch(() => notFound());
 
 	if (!group) {
 		notFound();
@@ -58,7 +52,7 @@ export default async function GroupDetailsPage({
 							<Card key={member.id}>
 								<CardHeader>
 									<CardTitle className="text-base">
-										{member.userId ?? "Unknown member"}
+										{member.email ?? "Unknown member"}
 									</CardTitle>
 								</CardHeader>
 
